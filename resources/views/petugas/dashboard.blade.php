@@ -5,9 +5,9 @@
 @section('content')
 <div class="content-area p-4">
     <div class="bg-primary text-white p-4 rounded mb-4">
-        <h4 class="mb-0">Hallo Selamat Datang Di Dashboard {{ Auth::user()->name ?? 'name_petugas' }}</h4>
+        <h4 class="mb-0">Halo Selamat Datang Di Dashboard {{ Auth::user()->name ?? 'name_petugas' }}</h4>
     </div>
-    
+
     <!-- Filter Periode -->
     <div class="bg-white p-4 rounded shadow-sm mb-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -52,38 +52,38 @@
         background-color: #f8f9fa;
         min-height: calc(100vh - 60px);
     }
-    
+
     .bg-primary {
         background-color: #1e3f8c !important;
     }
-    
+
     .rounded {
         border-radius: 8px !important;
     }
-    
+
     .shadow-sm {
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     }
-    
+
     h6.fw-bold {
         color: #1e3f8c;
     }
-    
+
     .dropdown-item.active {
         background-color: #1e3f8c;
         color: white;
     }
-    
+
     .btn-light {
         background-color: white;
         border-color: #dee2e6;
     }
-    
+
     .btn-light:hover {
         background-color: #f8f9fa;
         border-color: #dee2e6;
     }
-    
+
     canvas {
         max-width: 100%;
     }
@@ -236,7 +236,7 @@
         document.querySelectorAll('[data-period]').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
-                
+
                 // Update active state
                 document.querySelectorAll('[data-period]').forEach(el => {
                     el.classList.remove('active');
