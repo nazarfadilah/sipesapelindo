@@ -45,13 +45,12 @@ Route::prefix('superadmin')->name('superadmin.')->middleware('superadmin')->grou
     Route::prefix('laporan')->name('laporan.')->group(function () {
         Route::get('/', [SuperAdminLaporanController::class, 'index'])->name('index');
         Route::get('/export', [SuperAdminLaporanController::class, 'export'])->name('export');
-<<<<<<< HEAD
-=======
+
+        // Bagian yang tadi error (conflict) sudah diperbaiki di sini:
         Route::get('/harian', [SuperAdminController::class, 'laporanHarian'])->name('harian');
         Route::get('/mingguan', [SuperAdminController::class, 'laporanMingguan'])->name('mingguan');
         Route::get('/bulanan', [SuperAdminController::class, 'laporanBulanan'])->name('bulanan');
         Route::get('/tahunan', [SuperAdminController::class, 'laporanTahunan'])->name('tahunan');
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
     });
 });
 
@@ -70,6 +69,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/', [LaporanController::class, 'index'])->name('index');
         Route::get('/export', [LaporanController::class, 'export'])->name('export');
     });
+
     Route::get('/kelola-petugas', [AdminController::class, 'kelolaPetugas'])->name('kelola-petugas');
     Route::get('/tambah-petugas', [AdminController::class, 'tambahPetugas'])->name('tambah-petugas');
     Route::post('/store-petugas', [AdminController::class, 'storePetugas'])->name('store-petugas');
