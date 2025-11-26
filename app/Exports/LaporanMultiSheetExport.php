@@ -14,13 +14,15 @@ class LaporanMultiSheetExport implements WithMultipleSheets
     protected $rekapTerkelolaData;
     protected $rekapAreaData;
     protected $dailyData;
+    protected $tahun;
 
-    public function __construct(array $d1, array $d2, array $d3, array $d4)
+    public function __construct($d1, $d2, $d3, $d4, $tahun = null)
     {
         $this->rekapNeracaData = $d1;
         $this->rekapTerkelolaData = $d2;
         $this->rekapAreaData = $d3;
         $this->dailyData = $d4;
+        $this->tahun = $tahun ?? date('Y');
     }
 
     /**
@@ -30,26 +32,44 @@ class LaporanMultiSheetExport implements WithMultipleSheets
     {
         $sheets = [];
 
-        // Sheet 1: Rekap Neraca
-        $sheets[] = new RekapNeracaSheet($this->rekapNeracaData['data'], $this->rekapNeracaData['totals']);
+        // Sheet 1-3: Rekap (hanya jika data tersedia)
+        if ($this->rekapNeracaData !== null) {
+            $sheets[] = new RekapNeracaSheet(
+                $this->rekapNeracaData['data'], 
+                $this->rekapNeracaData['totals'],
+                $this->tahun
+            );
+        }
 
-        // Sheet 2: Rekap Sampah Terkelola
-        $sheets[] = new RekapTerkelolaSheet($this->rekapTerkelolaData['data'], $this->rekapTerkelolaData['totals']);
+        if ($this->rekapTerkelolaData !== null) {
+            $sheets[] = new RekapTerkelolaSheet(
+                $this->rekapTerkelolaData['data'], 
+                $this->rekapTerkelolaData['totals'],
+                $this->tahun
+            );
+        }
         
-        // Sheet 3: Rekap Area
-        $sheets[] = new RekapAreaSheet($this->rekapAreaData['data'], $this->rekapAreaData['totals'], $this->rekapAreaData['lokasis']);
+        if ($this->rekapAreaData !== null) {
+            $sheets[] = new RekapAreaSheet(
+                $this->rekapAreaData['data'], 
+                $this->rekapAreaData['totals'], 
+                $this->rekapAreaData['lokasis'],
+                $this->tahun
+            );
+        }
 
-        // Sheet 4-15: Data Harian per Bulan
+        // Sheet 4-15 (atau 1-12 jika tidak ada rekap): Data Harian per Bulan
         foreach ($this->dailyData['dailyData'] as $monthName => $data) {
             $sheets[] = new MonthlyDailySheet(
                 $monthName, 
                 $data['data'], 
-                $data['totals_neraca'], 
-                $data['totals_area'],
-                $this->dailyData['lokasis']
+                $data['totals'],
+                $this->dailyData['lokasis'],
+                $data['tahun'] ?? $this->tahun,
+                $data['bulan'] ?? $monthName
             );
         }
-        
+
         return $sheets;
     }
 }

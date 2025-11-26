@@ -3,15 +3,15 @@
 @section('title', 'Lihat Semua Data Dokumen')
 
 @section('content')
-<div class="content-area">
-    <div class="card">
-        <div class="card-body bg-primary text-white">
-            <h5 class="mb-0">Semua Data Dokumen</h5>
-        </div>
-        
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div style="background-color: #1E3F8C" class="p-4 rounded-top">
+                <h4 class="text-white mb-0">Semua Data Dokumen</h4>
+            </div>
+            <div class="bg-white p-4 rounded-bottom shadow">
+                <div class="table-responsive">
+                    <table id="dokumen-table" class="table table-striped table-bordered w-100">
                     <thead class="bg-primary text-white">
                         <tr>
                             <th width="5%" class="text-center">No</th>
@@ -58,29 +58,35 @@
                     </tbody>
                 </table>
             </div>
-            
-            @if(isset($dokumen) && $dokumen->hasPages())
-            <div class="d-flex justify-content-center mt-4">
-                {{ $dokumen->links() }}
-            </div>
-            @endif
-            
-            <div class="d-flex justify-content-center mt-3">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="rowsPerPageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        10 Baris
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="rowsPerPageDropdown">
-                        <li><a class="dropdown-item" href="{{ request()->url() }}?per_page=10">10 Baris</a></li>
-                        <li><a class="dropdown-item" href="{{ request()->url() }}?per_page=25">25 Baris</a></li>
-                        <li><a class="dropdown-item" href="{{ request()->url() }}?per_page=50">50 Baris</a></li>
-                        <li><a class="dropdown-item" href="{{ request()->url() }}?per_page=100">100 Baris</a></li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#dokumen-table').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [[5, 10, 25, 50, 100], [5, 10, 25, 50, 100]],
+            pagingType: "simple_numbers",
+            info: false,
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ baris",
+                zeroRecords: "Tidak ditemukan data yang sesuai",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
+@endpush
+
 @endsection
 
 @push('styles')

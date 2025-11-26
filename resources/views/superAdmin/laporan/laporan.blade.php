@@ -1,73 +1,123 @@
 @extends('superadmin.layout')
 
-@section('title', 'Menu Laporan')
+@section('title', 'Laporan Logbook Tahunan')
 
 @section('content')
 <div class="content-area">
-    <div class="card">
-        <div class="card-body bg-primary text-white">
-            <h5 class="mb-0">Menu Laporan</h5>
+    <div class="card" style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div class="card-body bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+            <h5 class="mb-0"><i class="fas fa-file-excel me-2"></i>Ekspor Laporan Logbook (Juli - Juni)</h5>
         </div>
         
         <div class="card-body">
-            <form method="GET" class="mb-4">
-                <div class="row align-items-end mb-3">
-                    <div class="col-md-4">
-                        <label for="year" class="form-label">Pilih Tahun Laporan:</label>
-                        <input type="number" class="form-control" id="year" name="year" 
-                               value="{{ request('year', date('Y')) }}" min="2020" max="2030" required>
+            <form action="{{ route('superadmin.laporan.export') }}" method="GET" class="mb-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="tahun" class="form-label fw-bold">Pilih Tahun Awal Periode (Juli):</label>
+                        <input type="number" class="form-control form-control-lg" id="tahun" name="tahun" 
+                               min="2020" max="2099" step="1" 
+                               value="{{ $tahun ?? date('Y') }}" required>
+                        <small class="text-muted">
+                            Memilih {{ $tahun ?? date('Y') }} akan mengekspor data Juli {{ $tahun ?? date('Y') }} - Juni {{ ($tahun ?? date('Y'))+1 }}
+                        </small>
                     </div>
-                    <div class="col-md-8">
-                        <div class="btn-group">
-                            <button type="submit" formaction="{{ route('superadmin.laporan.rekap.excel') }}" class="btn btn-success me-2">
-                                <i class="fas fa-file-excel"></i> Export Semua Rekap
-                            </button>
-                            <button type="submit" formaction="{{ route('superadmin.laporan.rekap.neraca') }}" class="btn btn-primary me-2">
-                                <i class="fas fa-balance-scale"></i> Rekap Neraca
-                            </button>
-                            <button type="submit" formaction="{{ route('superadmin.laporan.rekap.terkelola') }}" class="btn btn-info me-2">
-                                <i class="fas fa-recycle"></i> Rekap Terkelola
-                            </button>
-                            <button type="submit" formaction="{{ route('superadmin.laporan.rekap.area') }}" class="btn btn-warning me-2">
-                                <i class="fas fa-map-marker-alt"></i> Rekap Area
-                            </button>
-                            <button type="submit" formaction="{{ route('superadmin.laporan.rekap.daily') }}" class="btn btn-secondary">
-                                <i class="fas fa-calendar-day"></i> Data Harian
-                            </button>
-                        </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="tipe" class="form-label fw-bold">Pilih Tipe Export:</label>
+                        <select class="form-select form-select-lg" id="tipe" name="tipe" required>
+                            <option value="lengkap">📊 Lengkap - 15 Sheet (3 Rekap + 12 Bulanan)</option>
+                            <option value="bulanan">📅 Bulanan Saja - 12 Sheet (Data Harian per Bulan)</option>
+                        </select>
+                        <small class="text-muted" id="tipe-info">
+                            Export lengkap dengan semua sheet rekap dan data harian
+                        </small>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Data yang ditampilkan merupakan rekapitulasi selama satu tahun penuh.
-                            Pilih tahun di atas dan klik salah satu tombol untuk melihat atau mengunduh laporan yang diinginkan.
-                        </div>
+                        <button type="submit" class="btn btn-success btn-lg w-100" style="font-size: 1.1rem;">
+                            <i class="fas fa-download me-2"></i>Download Excel
+                        </button>
                     </div>
                 </div>
             </form>
 
-            @if(isset($rekapData))
-            <div class="preview-area mt-4">
-                <h6 class="mb-3">Preview Laporan Rekapitulasi Tahun {{ request('year', date('Y')) }}</h6>
+            <hr class="my-4">
+
+            <div class="alert alert-info mb-3">
+                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Informasi Tipe Export</h6>
                 
-                @if(isset($viewType) && $viewType == 'neraca')
-                    @include('superadmin.laporan.partials.neraca_table')
-                @elseif(isset($viewType) && $viewType == 'terkelola')
-                    @include('superadmin.laporan.partials.terkelola_table')
-                @elseif(isset($viewType) && $viewType == 'area')
-                    @include('superadmin.laporan.partials.area_table')
-                @elseif(isset($viewType) && $viewType == 'daily')
-                    @include('superadmin.laporan.partials.daily_table')
-                @else
-                    <div class="alert alert-info">
-                        Pilih jenis rekap yang ingin ditampilkan menggunakan tombol di atas.
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="p-3 mb-2" style="background: #fff; border-radius: 6px; border-left: 4px solid #198754;">
+                            <h6 class="fw-bold mb-2">📊 Export Lengkap (15 Sheet)</h6>
+                            <ul class="mb-0 small">
+                                <li><strong>Sheet 1:</strong> Rekap Neraca per Area</li>
+                                <li><strong>Sheet 2:</strong> Rekap Terkelola per Bulan</li>
+                                <li><strong>Sheet 3:</strong> Rekap Area (Pivot)</li>
+                                <li><strong>Sheet 4-15:</strong> Data Harian 12 Bulan</li>
+                            </ul>
+                            <p class="mt-2 mb-0 text-muted small">
+                                <i class="fas fa-check-circle text-success"></i> Cocok untuk laporan komprehensif dan analisis lengkap
+                            </p>
+                        </div>
                     </div>
-                @endif
+                    
+                    <div class="col-md-6">
+                        <div class="p-3 mb-2" style="background: #fff; border-radius: 6px; border-left: 4px solid #0dcaf0;">
+                            <h6 class="fw-bold mb-2">📅 Export Bulanan (12 Sheet)</h6>
+                            <ul class="mb-0 small">
+                                <li><strong>Juli:</strong> Data harian bulan Juli</li>
+                                <li><strong>Agustus:</strong> Data harian bulan Agustus</li>
+                                <li><strong>September - Juni:</strong> 10 sheet lainnya</li>
+                            </ul>
+                            <p class="mt-2 mb-0 text-muted small">
+                                <i class="fas fa-check-circle text-success"></i> Cocok untuk melihat detail harian tanpa rekap tambahan
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            @endif
+
+            <div class="card" style="background-color: #f8f9fa;">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-calendar-alt me-2"></i>Detail Periode Fiscal Year</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th>Periode</th>
+                                    <th>Sheet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Juli</td>
+                                    <td>1 - 31 Juli {{ $tahun ?? date('Y') }}</td>
+                                    <td>Sheet 4 (atau Sheet 1 jika bulanan saja)</td>
+                                </tr>
+                                <tr>
+                                    <td>Agustus</td>
+                                    <td>1 - 31 Agustus {{ $tahun ?? date('Y') }}</td>
+                                    <td>Sheet 5 (atau Sheet 2 jika bulanan saja)</td>
+                                </tr>
+                                <tr>
+                                    <td>September - Mei</td>
+                                    <td>Bulan 3-11 periode</td>
+                                    <td>Sheet 6-14 (atau 3-11 jika bulanan saja)</td>
+                                </tr>
+                                <tr>
+                                    <td>Juni</td>
+                                    <td>1 - 30 Juni {{ ($tahun ?? date('Y'))+1 }}</td>
+                                    <td>Sheet 15 (atau Sheet 12 jika bulanan saja)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -76,12 +126,15 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Validasi tahun
-    const yearInput = document.getElementById('year');
-    yearInput.addEventListener('change', function() {
-        const year = parseInt(this.value);
-        if (year < 2020) this.value = 2020;
-        if (year > 2030) this.value = 2030;
+    const tipeSelect = document.getElementById('tipe');
+    const tipeInfo = document.getElementById('tipe-info');
+    
+    tipeSelect.addEventListener('change', function() {
+        if (this.value === 'lengkap') {
+            tipeInfo.textContent = 'Export lengkap dengan 3 sheet rekap + 12 sheet data harian per bulan';
+        } else {
+            tipeInfo.textContent = 'Export hanya 12 sheet data harian (tanpa sheet rekap)';
+        }
     });
 });
 </script>
@@ -92,27 +145,20 @@ document.addEventListener('DOMContentLoaded', function() {
     .bg-primary {
         background-color: #1E3F8C !important;
     }
-    .text-primary {
-        color: #1E3F8C !important;
+    .card {
+        transition: all 0.3s ease;
     }
-    .btn-primary {
-        background-color: #0dcaf0;
-        border-color: #0dcaf0;
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    .preview-area {
-        background-color: #fff;
-        border-radius: 0.25rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    .alert-info {
+        background-color: #e7f3ff;
+        border-color: #b3d9ff;
+        color: #004085;
     }
-    .table th {
-        vertical-align: middle;
-        text-align: center;
-    }
-    .table .text-end {
-        text-align: right !important;
-    }
-    .table .text-center {
-        text-align: center !important;
+    .form-control-lg, .form-select-lg {
+        border-radius: 8px;
     }
 </style>
 @endpush

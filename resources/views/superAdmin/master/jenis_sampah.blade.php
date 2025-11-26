@@ -3,15 +3,15 @@
 @section('title', 'Lihat Semua Data')
 
 @section('content')
-<div class="content-area">
-    <div class="bg-primary text-white p-3 rounded mb-4">
-        <h3 class="mb-0">Semua Data Sampah > Jenis Sampah</h3>
-    </div>
-    
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div style="background-color: #1E3F8C" class="p-4 rounded-top">
+                <h4 class="text-white mb-0">Semua Data Sampah > Jenis Sampah</h4>
+            </div>
+            <div class="bg-white p-4 rounded-bottom shadow">
+                <div class="table-responsive">
+                    <table id="jenis-sampah-table" class="table table-striped table-bordered w-100">
                     <thead class="bg-primary text-white">
                         <tr>
                             <th width="10%" class="text-center">No</th>
@@ -21,7 +21,7 @@
                     <tbody>
                         @forelse($jenisSampah as $index => $jenis)
                         <tr>
-                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td class="text-center">{{ ($jenisSampah->currentPage() - 1) * $jenisSampah->perPage() + $index + 1 }}</td>
                             <td>{{ $jenis->nama_jenis }}</td>
                         </tr>
                         @empty
@@ -32,41 +32,34 @@
                     </tbody>
                 </table>
             </div>
-            
-            <div class="d-flex justify-content-center mt-4">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        {{ $jenisSampah->links() }}
-                    </ul>
-                </nav>
-            </div>
-            
-            <div class="dropdown d-flex justify-content-center mt-2">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    10 Baris
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#">10 Baris</a></li>
-                    <li><a class="dropdown-item" href="#">25 Baris</a></li>
-                    <li><a class="dropdown-item" href="#">50 Baris</a></li>
-                    <li><a class="dropdown-item" href="#">100 Baris</a></li>
-                </ul>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
-@push('styles')
-<style>
-    .pagination {
-        justify-content: center;
-    }
-    .bg-primary {
-        background-color: #1E3F8C !important;
-    }
-    .table th {
-        vertical-align: middle;
-    }
-</style>
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#jenis-sampah-table').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [[5, 10, 25, 50, 100], [5, 10, 25, 50, 100]],
+            pagingType: "simple_numbers",
+            info: false,
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ baris",
+                zeroRecords: "Tidak ditemukan data yang sesuai",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 @endpush
+
+@endsection

@@ -11,32 +11,35 @@ class MonthlyDailySheet implements FromView, WithTitle, ShouldAutoSize
 {
     private $monthName;
     private $data;
-    private $totalsNeraca;
-    private $totalsArea;
+    private $totals;
     private $lokasis;
+    private $tahun;
+    private $bulan;
 
-    public function __construct(string $monthName, array $data, array $totalsNeraca, array $totalsArea, $lokasis)
+    public function __construct(string $monthName, array $data, array $totals, $lokasis, $tahun = null, $bulan = null)
     {
         $this->monthName = $monthName;
         $this->data = $data;
-        $this->totalsNeraca = $totalsNeraca;
-        $this->totalsArea = $totalsArea;
+        $this->totals = $totals;
         $this->lokasis = $lokasis;
+        $this->tahun = $tahun ?? date('Y');
+        $this->bulan = $bulan ?? $monthName;
     }
 
     public function view(): View
     {
         return view('admin.laporan.export_templates.daily_month', [
             'dailyData' => $this->data,
-            'totalsNeraca' => $this->totalsNeraca,
-            'totalsArea' => $this->totalsArea,
-            'lokasis' => $this->lokasis
+            'totals' => $this->totals,
+            'lokasis' => $this->lokasis,
+            'monthName' => $this->monthName,
+            'tahun' => $this->tahun,
+            'bulan' => $this->bulan
         ]);
     }
 
     public function title(): string
     {
-        // Judul sheet-nya (cth: "Juli 2024" menjadi "Juli")
-        return explode(' ', $this->monthName)[0];
+        return $this->monthName;
     }
 }

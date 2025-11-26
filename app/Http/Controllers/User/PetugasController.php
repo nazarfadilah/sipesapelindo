@@ -32,6 +32,10 @@ class PetugasController extends Controller
     public function sampahTerkelola()
     {
         $sampahTerkelolas = SampahTerkelola::with(['user', 'lokasiAsal', 'jenis'])
+<<<<<<< HEAD
+=======
+            ->where('id_user', Auth::id())
+>>>>>>> 1f05cb852397f16d176ea7e6057455da1a78b7a4
             ->orderBy('tgl', 'desc')
             ->get();
         
@@ -46,6 +50,10 @@ class PetugasController extends Controller
     public function sampahDiserahkan()
     {
         $sampahDiserahkans = SampahDiserahkan::with(['user', 'lokasiAsal', 'jenis', 'tujuanSampah'])
+<<<<<<< HEAD
+=======
+            ->where('id_user', Auth::id())
+>>>>>>> 1f05cb852397f16d176ea7e6057455da1a78b7a4
             ->orderBy('tgl', 'desc')
             ->get();
         

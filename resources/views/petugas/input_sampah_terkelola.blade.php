@@ -231,10 +231,10 @@
             <input type="hidden" name="id_user" value="{{ Auth::id() }}">
             
             <div class="form-group" style="margin-top: 30px;">
-                <a href="{{ route('petugas.dashboard') }}" class="btn btn-secondary">
+                <a href="{{ route('petugas.dashboard') }}" class="btn btn-secondary" id="btnBack">
                     <i class="fas fa-arrow-left me-1"></i> Kembali
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" id="btnSubmit">
                     <i class="fas fa-save me-1"></i> Simpan
                 </button>
             </div>
@@ -250,12 +250,114 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Update file input label with selected filename
-        document.querySelector('.custom-file-input').addEventListener('change', function(e) {
-            const fileName = e.target.files[0].name;
-            const label = e.target.nextElementSibling;
-            label.innerHTML = fileName;
+        const form = document.getElementById('formSampah');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnBack = document.getElementById('btnBack');
+        let formChanged = false;
+        window.isSubmitting = false;
+
+        // Track form changes
+        const formInputs = form.querySelectorAll('input, select, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                formChanged = true;
+            });
         });
+
+        // Update file input label with selected filename
+        const fileInput = document.querySelector('.custom-file-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name || 'Choose file';
+                const label = e.target.nextElementSibling;
+                if (label) {
+                    label.innerHTML = fileName;
+                }
+                formChanged = true;
+            });
+        }
+
+        // Function to show confirm dialog
+        function showConfirm(title, text, confirmText, callback) {
+            Swal.fire({
+                title,
+                text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#0dcaf0',
+                cancelButtonColor: '#6c757d'
+            }).then(result => {
+                if (result.isConfirmed) callback();
+            });
+        }
+
+        // ✅ Tombol SIMPAN
+        btnSubmit.addEventListener('click', function() {
+            // Validate form first
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            showConfirm(
+                'Simpan Data?',
+                'Pastikan data sudah benar sebelum melanjutkan.',
+                'Ya, Simpan',
+                () => {
+                    window.isSubmitting = true;
+                    formChanged = false;
+                    form.submit();
+                }
+            );
+        });
+
+        // ✅ Tombol KEMBALI
+        btnBack.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (formChanged) {
+                showConfirm(
+                    'Konfirmasi',
+                    'Apakah anda yakin ingin kembali? Perubahan yang belum disimpan akan hilang.',
+                    'Ya, Kembali',
+                    () => {
+                        formChanged = false;
+                        window.location.href = btnBack.href;
+                    }
+                );
+            } else {
+                window.location.href = btnBack.href;
+            }
+        });
+
+        // ✅ Warning jika close tab / refresh
+        window.onbeforeunload = function(e) {
+            if (formChanged && !window.isSubmitting) {
+                e.preventDefault();
+                return '';
+            }
+        };
+
+        // ✅ Sukses / flash message
+        @if(session('success'))
+        Swal.fire({
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            icon: 'success',
+            confirmButtonColor: '#0dcaf0'
+        });
+        @endif
+
+        // ✅ Error / flash message
+        @if(session('error'))
+        Swal.fire({
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            icon: 'error',
+            confirmButtonColor: '#dc3545'
+        });
+        @endif
     });
 </script>
 @endpush

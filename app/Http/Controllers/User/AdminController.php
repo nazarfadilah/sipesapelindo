@@ -104,11 +104,11 @@ class AdminController extends Controller
         ];
 
         foreach ($jenisSampah as $index => $jenis) {
-            $jenisSampahLabels[] = $jenis->nama;
+            $jenisSampahLabels[] = $jenis->nama_jenis;
 
             // Hitung total sampah per jenis
             $total = $sampahTerkelola
-                ->where('jenis', $jenis->nama)
+                ->where('jenis', $jenis->nama_jenis)
                 ->sum('total_berat');
 
             $jenisSampahData[] = $total;
@@ -120,11 +120,11 @@ class AdminController extends Controller
         $lokasiSampahData = [];
 
         foreach ($lokasiSampah as $lokasi) {
-            $lokasiSampahLabels[] = $lokasi->nama;
+            $lokasiSampahLabels[] = $lokasi->nama_lokasi;
 
             // Hitung total sampah per lokasi
             $total = $sampahTerkelola
-                ->where('lokasi', $lokasi->nama)
+                ->where('lokasi', $lokasi->nama_lokasi)
                 ->sum('total_berat');
 
             $lokasiSampahData[] = $total;
@@ -133,7 +133,7 @@ class AdminController extends Controller
         // Data untuk tabel rekap
         $rekapData = [];
         foreach ($lokasiSampah as $lokasi) {
-            $lokasiNama = $lokasi->nama;
+            $lokasiNama = $lokasi->nama_lokasi;
 
             // Total sampah terkelola untuk lokasi ini
             $totalSampahBiasa = $sampahTerkelola

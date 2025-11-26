@@ -35,25 +35,80 @@ class SuperAdminController extends Controller
         $queryTerkelola = SampahTerkelola::query();
         $queryDiserahkan = SampahDiserahkan::query();
         
-        // Menerapkan filter berdasarkan pilihan
-        if ($filterType == 'year') {
-            $queryTerkelola->whereYear('tgl', $year);
-            $queryDiserahkan->whereYear('tgl', $year);
-        } elseif ($filterType == 'month') {
-            $queryTerkelola->whereYear('tgl', $year)->whereMonth('tgl', $month);
-            $queryDiserahkan->whereYear('tgl', $year)->whereMonth('tgl', $month);
-        } elseif ($filterType == 'week') {
-            $startDate = Carbon::create($year, $month, 1)->startOfMonth();
-            $weekStart = $startDate->copy()->addDays(($week - 1) * 7);
-            $weekEnd = $weekStart->copy()->addDays(6);
-            
-            $queryTerkelola->whereBetween('tgl', [$weekStart, $weekEnd]);
-            $queryDiserahkan->whereBetween('tgl', [$weekStart, $weekEnd]);
-        } elseif ($filterType == 'day') {
-            $queryTerkelola->whereDate('tgl', $day);
-            $queryDiserahkan->whereDate('tgl', $day);
+        // Determine date range: support explicit start_date/end_date, fiscal (Jul-Jun), or existing filters
+        $useDateRange = false;
+        $startDate = null;
+        $endDate = null;
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->get('end_date'))->endOfDay();
+            $useDateRange = true;
+        } elseif ($filterType === 'fiscal') {
+            // fiscal_year param expected to be the ending year (e.g., 2025 means Jul 2024 - Jun 2025)
+            $fiscalEnd = $request->get('fiscal_year', (Carbon::now()->month >= 7 ? Carbon::now()->year : Carbon::now()->year - 1));
+            $startDate = Carbon::create($fiscalEnd - 1, 7, 1)->startOfDay();
+            $endDate = Carbon::create($fiscalEnd, 6, 30)->endOfDay();
+            $useDateRange = true;
+        } elseif (!$request->filled('filter_type')) {
+            // Default: when page first accessed with no filters, show previous fiscal year
+            $now = Carbon::now();
+            // previous fiscal end year: if current month is July or after, previous fiscal end is current year,
+            // otherwise it's last year. Example: Nov 2025 -> previous fiscal is Jul 2024 - Jun 2025 (fiscalEnd=2025)
+            $fiscalEnd = ($now->month >= 7) ? $now->year : $now->year - 1;
+            $startDate = Carbon::create($fiscalEnd - 1, 7, 1)->startOfDay();
+            $endDate = Carbon::create($fiscalEnd, 6, 30)->endOfDay();
+            $useDateRange = true;
+            // also mark filterType so other UI can reflect it if needed
+            $filterType = 'fiscal';
+        } else {
+            // existing granular filters (year/month/week/day) will be applied later
+        }
+
+        // Apply date range to base queries if needed
+        if ($useDateRange) {
+            $queryTerkelola->whereBetween('tgl', [$startDate, $endDate]);
+            $queryDiserahkan->whereBetween('tgl', [$startDate, $endDate]);
+        } else {
+            // Menerapkan filter berdasarkan pilihan (year/month/week/day)
+            if ($filterType == 'year') {
+                $queryTerkelola->whereYear('tgl', $year);
+                $queryDiserahkan->whereYear('tgl', $year);
+            } elseif ($filterType == 'month') {
+                $queryTerkelola->whereYear('tgl', $year)->whereMonth('tgl', $month);
+                $queryDiserahkan->whereYear('tgl', $year)->whereMonth('tgl', $month);
+            } elseif ($filterType == 'week') {
+                $startWeek = Carbon::create($year, $month, 1)->startOfMonth();
+                $weekStart = $startWeek->copy()->addDays(($week - 1) * 7);
+                $weekEnd = $weekStart->copy()->addDays(6);
+                $queryTerkelola->whereBetween('tgl', [$weekStart, $weekEnd]);
+                $queryDiserahkan->whereBetween('tgl', [$weekStart, $weekEnd]);
+            } elseif ($filterType == 'day') {
+                $queryTerkelola->whereDate('tgl', $day);
+                $queryDiserahkan->whereDate('tgl', $day);
+            }
         }
         
+        // helper to apply either date range or granular filters
+        $applyDateFilter = function($query) use ($useDateRange, $startDate, $endDate, $filterType, $year, $month, $week, $day) {
+            if ($useDateRange) {
+                $query->whereBetween('tgl', [$startDate, $endDate]);
+                return;
+            }
+            if ($filterType == 'year') {
+                $query->whereYear('tgl', $year);
+            } elseif ($filterType == 'month') {
+                $query->whereYear('tgl', $year)->whereMonth('tgl', $month);
+            } elseif ($filterType == 'week') {
+                $startDateW = Carbon::create($year, $month, 1)->startOfMonth();
+                $weekStart = $startDateW->copy()->addDays(($week - 1) * 7);
+                $weekEnd = $weekStart->copy()->addDays(6);
+                $query->whereBetween('tgl', [$weekStart, $weekEnd]);
+            } elseif ($filterType == 'day') {
+                $query->whereDate('tgl', $day);
+            }
+        };
+
         // Mendapatkan semua jenis sampah untuk pie chart
         $jenisSampah = Jenis::all();
         $jenisColors = ['#FF0000', '#00FF00', '#FFFF00', '#0000FF', '#FF00FF', '#00FFFF', '#FF9900', '#9900FF', '#009900'];
@@ -63,36 +118,14 @@ class SuperAdminController extends Controller
         
         foreach ($jenisSampah as $index => $jenis) {
             $totalJenis = SampahTerkelola::where('id_jenis', $jenis->id)
-                ->where(function($query) use ($filterType, $year, $month, $week, $day) {
-                    if ($filterType == 'year') {
-                        $query->whereYear('tgl', $year);
-                    } elseif ($filterType == 'month') {
-                        $query->whereYear('tgl', $year)->whereMonth('tgl', $month);
-                    } elseif ($filterType == 'week') {
-                        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
-                        $weekStart = $startDate->copy()->addDays(($week - 1) * 7);
-                        $weekEnd = $weekStart->copy()->addDays(6);
-                        $query->whereBetween('tgl', [$weekStart, $weekEnd]);
-                    } elseif ($filterType == 'day') {
-                        $query->whereDate('tgl', $day);
-                    }
+                ->where(function($query) use ($applyDateFilter) {
+                    $applyDateFilter($query);
                 })
                 ->sum('jumlah_berat');
-                
+
             $totalJenis += SampahDiserahkan::where('id_jenis', $jenis->id)
-                ->where(function($query) use ($filterType, $year, $month, $week, $day) {
-                    if ($filterType == 'year') {
-                        $query->whereYear('tgl', $year);
-                    } elseif ($filterType == 'month') {
-                        $query->whereYear('tgl', $year)->whereMonth('tgl', $month);
-                    } elseif ($filterType == 'week') {
-                        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
-                        $weekStart = $startDate->copy()->addDays(($week - 1) * 7);
-                        $weekEnd = $weekStart->copy()->addDays(6);
-                        $query->whereBetween('tgl', [$weekStart, $weekEnd]);
-                    } elseif ($filterType == 'day') {
-                        $query->whereDate('tgl', $day);
-                    }
+                ->where(function($query) use ($applyDateFilter) {
+                    $applyDateFilter($query);
                 })
                 ->sum('jumlah_berat');
             
@@ -105,39 +138,17 @@ class SuperAdminController extends Controller
         
         foreach ($lokasiAsals as $lokasi) {
             $totalLokasi = SampahTerkelola::where('id_lokasi', $lokasi->id)
-                ->where(function($query) use ($filterType, $year, $month, $week, $day) {
-                    if ($filterType == 'year') {
-                        $query->whereYear('tgl', $year);
-                    } elseif ($filterType == 'month') {
-                        $query->whereYear('tgl', $year)->whereMonth('tgl', $month);
-                    } elseif ($filterType == 'week') {
-                        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
-                        $weekStart = $startDate->copy()->addDays(($week - 1) * 7);
-                        $weekEnd = $weekStart->copy()->addDays(6);
-                        $query->whereBetween('tgl', [$weekStart, $weekEnd]);
-                    } elseif ($filterType == 'day') {
-                        $query->whereDate('tgl', $day);
-                    }
+                ->where(function($query) use ($applyDateFilter) {
+                    $applyDateFilter($query);
                 })
                 ->sum('jumlah_berat');
-                
+
             $totalLokasi += SampahDiserahkan::where('id_lokasi', $lokasi->id)
-                ->where(function($query) use ($filterType, $year, $month, $week, $day) {
-                    if ($filterType == 'year') {
-                        $query->whereYear('tgl', $year);
-                    } elseif ($filterType == 'month') {
-                        $query->whereYear('tgl', $year)->whereMonth('tgl', $month);
-                    } elseif ($filterType == 'week') {
-                        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
-                        $weekStart = $startDate->copy()->addDays(($week - 1) * 7);
-                        $weekEnd = $weekStart->copy()->addDays(6);
-                        $query->whereBetween('tgl', [$weekStart, $weekEnd]);
-                    } elseif ($filterType == 'day') {
-                        $query->whereDate('tgl', $day);
-                    }
+                ->where(function($query) use ($applyDateFilter) {
+                    $applyDateFilter($query);
                 })
                 ->sum('jumlah_berat');
-            
+
             $lokasiTotals[] = $totalLokasi;
         }
         
@@ -158,35 +169,51 @@ class SuperAdminController extends Controller
             // Menghitung total sampah reguler dan LB3 berdasarkan jenis
             $sampahKg = SampahTerkelola::where('id_lokasi', $lokasi->id)
                 ->whereHas('jenis', function ($query) {
-                    $query->where('kategori', 'sampah');
+                    $query->whereNotIn('nama_jenis', ['LB3']);
+                })
+                ->where(function($q) use ($applyDateFilter) {
+                    $applyDateFilter($q);
                 })
                 ->sum('jumlah_berat');
-                
+
             $lb3Kg = SampahTerkelola::where('id_lokasi', $lokasi->id)
                 ->whereHas('jenis', function ($query) {
-                    $query->where('kategori', 'lb3');
+                    $query->where('nama_jenis', 'LB3');
+                })
+                ->where(function($q) use ($applyDateFilter) {
+                    $applyDateFilter($q);
                 })
                 ->sum('jumlah_berat');
-                
+
             $totalKg = $sampahKg + $lb3Kg;
-            
+
             // Sampah terkelola
-            $terkelolaKg = SampahTerkelola::where('id_lokasi', $lokasi->id)->sum('jumlah_berat');
+            $terkelolaKg = SampahTerkelola::where('id_lokasi', $lokasi->id)
+                ->where(function($q) use ($applyDateFilter) {
+                    $applyDateFilter($q);
+                })
+                ->sum('jumlah_berat');
             $persenTerkelola = $totalKg > 0 ? ($terkelolaKg / $totalKg) * 100 : 0;
-            
+
             // Sampah diserahkan
             $diserahkanKg = SampahDiserahkan::where('id_lokasi', $lokasi->id)
                 ->whereHas('jenis', function ($query) {
-                    $query->where('kategori', 'sampah');
+                    $query->whereNotIn('nama_jenis', ['LB3']);
+                })
+                ->where(function($q) use ($applyDateFilter) {
+                    $applyDateFilter($q);
                 })
                 ->sum('jumlah_berat');
-                
+
             $diserahkanLb3Kg = SampahDiserahkan::where('id_lokasi', $lokasi->id)
                 ->whereHas('jenis', function ($query) {
-                    $query->where('kategori', 'lb3');
+                    $query->where('nama_jenis', 'LB3');
+                })
+                ->where(function($q) use ($applyDateFilter) {
+                    $applyDateFilter($q);
                 })
                 ->sum('jumlah_berat');
-                
+
             $persenDiserahkan = $totalKg > 0 ? (($diserahkanKg + $diserahkanLb3Kg) / $totalKg) * 100 : 0;
             
             $neraca[] = [
@@ -221,7 +248,10 @@ class SuperAdminController extends Controller
             'lokasiAsals', 
             'lokasiTotals', 
             'neraca', 
-            'totals'
+            'totals',
+            'startDate',
+            'endDate',
+            'filterType'
         ));
     }
 
@@ -230,9 +260,12 @@ class SuperAdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function masterUsers()
+    public function masterUsers(Request $request)
     {
-        $users = User::where('role', '!=', 'superadmin')->get();
+        $perPage = $request->get('per_page', 10);
+        $users = User::where('role', '!=', 'superadmin')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
         return view('superAdmin.master.users', compact('users'));
     }
 
@@ -244,9 +277,10 @@ class SuperAdminController extends Controller
      */
     public function masterSampahTerkelola(Request $request)
     {
-        $sampahTerkelolas = SampahTerkelola::with(['user', 'lokasi', 'jenis'])
+        $perPage = $request->get('per_page', 10);
+        $sampahTerkelolas = SampahTerkelola::with(['user', 'lokasiAsal', 'jenis'])
             ->orderBy('tgl', 'desc')
-            ->get();
+            ->paginate($perPage);
         
         return view('superAdmin.master.sampah_terkelola', compact('sampahTerkelolas'));
     }
@@ -259,9 +293,10 @@ class SuperAdminController extends Controller
      */
     public function masterSampahDiserahkan(Request $request)
     {
-        $sampahDiserahkans = SampahDiserahkan::with(['user', 'lokasi', 'jenis', 'diserahkan'])
+        $perPage = $request->get('per_page', 10);
+        $sampahDiserahkans = SampahDiserahkan::with(['user', 'lokasiAsal', 'jenis', 'tujuanSampah'])
             ->orderBy('tgl', 'desc')
-            ->get();
+            ->paginate($perPage);
         
         return view('superAdmin.master.sampah_diserahkan', compact('sampahDiserahkans'));
     }
@@ -280,11 +315,14 @@ class SuperAdminController extends Controller
     /**
      * Menampilkan data jenis sampah
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function masterJenisSampah()
+    public function masterJenisSampah(Request $request)
     {
-        $jenisSampah = Jenis::all();
+        $perPage = $request->get('per_page', 10);
+        $jenisSampah = Jenis::orderBy('created_at', 'desc')
+            ->paginate($perPage);
         return view('superAdmin.master.jenis_sampah', compact('jenisSampah'));
     }
 
@@ -322,11 +360,11 @@ class SuperAdminController extends Controller
         $tanggal = $request->get('tanggal', date('Y-m-d'));
         
         // Query untuk mendapatkan data laporan harian
-        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasi'])
+        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasiAsal', 'user'])
             ->whereDate('tgl', $tanggal)
             ->get();
             
-        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasi', 'diserahkan'])
+        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasiAsal', 'tujuanSampah', 'user'])
             ->whereDate('tgl', $tanggal)
             ->get();
         
@@ -350,11 +388,11 @@ class SuperAdminController extends Controller
         $weekEnd = $weekStart->copy()->addDays(6);
         
         // Query untuk mendapatkan data laporan mingguan
-        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasi'])
+        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasiAsal', 'user'])
             ->whereBetween('tgl', [$weekStart, $weekEnd])
             ->get();
             
-        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasi', 'diserahkan'])
+        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasiAsal', 'tujuanSampah', 'user'])
             ->whereBetween('tgl', [$weekStart, $weekEnd])
             ->get();
         
@@ -381,12 +419,12 @@ class SuperAdminController extends Controller
         $month = $request->get('month', date('m'));
         
         // Query untuk mendapatkan data laporan bulanan
-        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasi'])
+        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasiAsal', 'user'])
             ->whereYear('tgl', $year)
             ->whereMonth('tgl', $month)
             ->get();
             
-        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasi', 'diserahkan'])
+        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasiAsal', 'tujuanSampah', 'user'])
             ->whereYear('tgl', $year)
             ->whereMonth('tgl', $month)
             ->get();
@@ -410,11 +448,11 @@ class SuperAdminController extends Controller
         $year = $request->get('year', date('Y'));
         
         // Query untuk mendapatkan data laporan tahunan
-        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasi'])
+        $sampahTerkelolas = SampahTerkelola::with(['jenis', 'lokasiAsal', 'user'])
             ->whereYear('tgl', $year)
             ->get();
             
-        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasi', 'diserahkan'])
+        $sampahDiserahkans = SampahDiserahkan::with(['jenis', 'lokasiAsal', 'tujuanSampah', 'user'])
             ->whereYear('tgl', $year)
             ->get();
         
@@ -440,7 +478,7 @@ class SuperAdminController extends Controller
             $month = Carbon::parse($terkelola->tgl)->month;
             $monthlyData[$month]['terkelola']['total'] += $terkelola->jumlah_berat;
             
-            if ($terkelola->jenis && $terkelola->jenis->kategori == 'lb3') {
+            if ($terkelola->jenis && $terkelola->jenis->nama_jenis === 'LB3') {
                 $monthlyData[$month]['terkelola']['lb3'] += $terkelola->jumlah_berat;
             } else {
                 $monthlyData[$month]['terkelola']['sampah'] += $terkelola->jumlah_berat;
@@ -451,7 +489,7 @@ class SuperAdminController extends Controller
             $month = Carbon::parse($diserahkan->tgl)->month;
             $monthlyData[$month]['diserahkan']['total'] += $diserahkan->jumlah_berat;
             
-            if ($diserahkan->jenis && $diserahkan->jenis->kategori == 'lb3') {
+            if ($diserahkan->jenis && $diserahkan->jenis->nama_jenis === 'LB3') {
                 $monthlyData[$month]['diserahkan']['lb3'] += $diserahkan->jumlah_berat;
             } else {
                 $monthlyData[$month]['diserahkan']['sampah'] += $diserahkan->jumlah_berat;

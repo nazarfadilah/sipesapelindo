@@ -4,29 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'Admin Dashboard') - SIPESA Pelindo</title>
-    
+    <title>@yield('title', 'Admin Dashboard') P-Waste Pelindo Subregional Kalimantan</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    
+
     <!-- Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Sweet Alert -->
-    
+
     <style>
         :root {
             --primary-blue: #1E3F8C;
             --white: #ffffff;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
@@ -38,77 +38,81 @@
             min-width: 100vw;
             overflow-x: hidden;
         }
-        
+
         main {
             flex: 1;
             width: 100%;
         }
-        
+
         /* Header Styling */
         .app-header {
             background-color: var(--primary-blue) !important;
             color: var(--white) !important;
             width: 100%;
             min-width: 100vw;
-            padding: 2rem 0;
+            /* reduced vertical padding to make header shorter */
+            padding: 1.4rem 0;
             margin: 0;
             overflow-x: hidden;
         }
-        
+
         .app-header .container-fluid {
-            padding-left: 2rem;
-            padding-right: 2rem;
+            /* slightly smaller horizontal padding to tighten header content */
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
-        
+
         .app-title {
-            font-size: 2rem;
-            height: 50px;
-            /* lebar kebawah */
+            /* smaller title to reduce header height */
+            font-size: 1.25rem;
+            height: 40px;
             font-weight: 600;
             margin: 0;
             color: var(--white) !important;
-            padding-bottom: 0.25rem;
+            padding-bottom: 0.125rem;
         }
-        
+
         .app-subtitle {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             margin: 0;
             color: var(--white);
             opacity: 0.95;
         }
-        
+
         .header-right {
             color: var(--white);
             display: flex;
             align-items: center;
             gap: 1.5rem;
         }
-        
+
         .logout-btn {
             background-color: var(--white);
             color: var(--primary-blue);
             border: none;
             border-radius: 4px;
-            padding: 0.4rem 1.2rem;
+            /* slightly smaller button */
+            padding: 0.28rem 0.9rem;
             font-weight: 500;
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
         }
-        
+
         .logout-btn:hover {
             background-color: #f8f9fa;
             color: var(--primary-blue);
             text-decoration: none;
         }
-        
+
         /* Navbar Styling */
         .time-display {
             background-color: var(--white);
             color: var(--primary-blue);
-            padding: 0.4rem 1rem;
+            /* smaller time pill */
+            padding: 0.2rem 0.6rem;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
         }
 
@@ -117,8 +121,9 @@
             width: 100%;
             min-width: 100vw;
             margin: 0;
-            padding: 0.75rem 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            /* reduced navbar height */
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             position: relative;
             z-index: 1050;
         }
@@ -127,7 +132,7 @@
             padding-left: 2rem;
             padding-right: 2rem;
         }
-        
+
         .nav-pills {
             flex-wrap: nowrap;
             justify-content: center;
@@ -138,7 +143,7 @@
         .nav-item.dropdown {
             position: relative;
         }
-        
+
         .dropdown-menu {
             position: absolute;
             top: 100%;
@@ -156,7 +161,7 @@
         .dropdown-menu.show {
             display: block;
         }
-        
+
         .nav-item.dropdown {
             position: relative;
         }
@@ -165,38 +170,39 @@
             position: relative;
             z-index: 1030;
         }
-        
+
         .nav-pills .nav-link {
             color: #333 !important;
             border-radius: 6px;
-            margin: 0 0.3rem;
-            padding: 0.8rem 1.6rem;
+            margin: 0 0.25rem;
+            /* more compact nav links */
+            padding: 0.45rem 0.9rem;
             display: flex;
             align-items: center;
-            font-size: 1rem;
+            font-size: 0.92rem;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
-        
+
         .nav-pills .nav-link.active {
             background-color: var(--primary-blue) !important;
             color: var(--white) !important;
         }
-        
+
         .nav-pills .nav-link:hover:not(.active) {
             background-color: #f0f0f0;
         }
-        
+
         .nav-pills .nav-link.active {
             background-color: var(--white);
             color: var(--primary-blue);
             font-weight: 600;
         }
-        
+
         .nav-pills .nav-link i {
             margin-right: 0.5rem;
         }
-        
+
         .nav-pills .nav-link:not(.active):hover {
             background-color: rgba(30, 63, 140, 0.1);
         }
@@ -222,13 +228,13 @@
             background-color: rgba(30, 63, 140, 0.1);
             color: var(--primary-blue);
         }
-        
+
         /* Time Display */
         #timeDisplay {
             font-size: 0.9rem;
             font-weight: 500;
         }
-        
+
         /* Content Area */
         .content-area {
             color: var(--text-color);
@@ -249,13 +255,13 @@
             padding: 1.5rem 0;
             margin-right: auto;
         }
-        
+
         /* Footer Styling */
-        
+
         .app-navbar .dropdown-item:hover {
             background-color: rgba(30, 63, 140, 0.1);
         }
-        
+
         .content-area {
             background-color: var(--white);
             border-radius: 10px;
@@ -263,7 +269,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        
+
         .app-footer {
             background-color: var(--primary-color);
             color: var(--white);
@@ -271,7 +277,7 @@
             margin-top: 20px;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .stats-card {
             background-color: var(--white);
             border-radius: 10px;
@@ -280,53 +286,53 @@
             margin-bottom: 20px;
             transition: transform 0.3s;
         }
-        
+
         .stats-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .stats-card .icon {
             font-size: 2rem;
             color: var(--primary-color);
         }
-        
+
         .stats-card .title {
             font-size: 0.9rem;
             color: #666;
         }
-        
+
         .stats-card .value {
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-color);
         }
-        
+
         .chart-container {
             position: relative;
             margin: auto;
             height: 300px;
             width: 100%;
         }
-        
+
         .table-dashboard {
             font-size: 14px;
         }
-        
+
         .table-dashboard th {
             background-color: var(--primary-color);
             color: var(--white);
         }
-        
+
         .badge-lb3 {
             background-color: #dc3545;
             color: white;
         }
-        
+
         .badge-sampah {
             background-color: #28a745;
             color: white;
         }
-        
+
         /* Footer Styling */
         .app-footer {
             background-color: var(--primary-blue) !important;
@@ -352,18 +358,18 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-        
+
         @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-        
+
         @yield('content') </div>
-    
+
     @include('admin.partials.footer')
-    
+
     <!-- ✅ SweetAlert harus disini sebelum stack scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

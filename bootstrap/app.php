@@ -11,7 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Register middleware aliases
+        $middleware->alias([
+            'superadmin' => \App\Http\Middleware\AuthUserMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'petugas' => \App\Http\Middleware\PetugasMiddleware::class,
+        ]);
+        
+        // Register global middleware to check sipesapelindo URLs
+        $middleware->append(\App\Http\Middleware\CheckSipesaPelindoUrl::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

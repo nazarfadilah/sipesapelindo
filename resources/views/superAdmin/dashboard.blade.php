@@ -20,7 +20,7 @@
                 <div id="yearFilter" class="me-3 {{ request('filter_type') != 'year' && request('filter_type') ? 'd-none' : '' }}">
                     <label for="year" class="me-2">Tahun:</label>
                     <select id="year" name="year" class="form-select form-select-sm">
-                        @for ($y = date('Y'); $y >= 2020; $y--)
+                        @for ($y = date('Y'); $y >= 2023; $y--)
                             <option value="{{ $y }}" {{ request('year', date('Y')) == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
                     </select>
@@ -59,15 +59,17 @@
 
 <div class="row">
     <div class="col-md-6">
-        <div class="chart-container">
-            <h5 class="mb-3">Distribusi Sampah Berdasarkan Jenis</h5>
-            <div class="d-flex">
-                <canvas id="pieChart" style="width: 100%; height: 250px;"></canvas>
-                <div class="pie-chart-legend ms-3">
+        <div class="card bg-white text-dark p-3 shadow-sm">
+            <h5 class="mb-3 text-dark">Distribusi Sampah Berdasarkan Jenis</h5>
+            <div class="d-flex align-items-center">
+                <div style="flex:1;">
+                    <canvas id="pieChart" style="width: 100%; height: 250px;"></canvas>
+                </div>
+                <div class="pie-chart-legend ms-3" style="min-width:140px;">
                     @foreach ($jenisSampah as $index => $jenis)
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: {{ $jenisColors[$index] }}"></div>
-                        <div>{{ $jenis->nama_jenis }} ({{ $jenisTotals[$index] }}%)</div>
+                    <div class="legend-item d-flex align-items-center mb-2">
+                        <div class="legend-color me-2" style="width:16px; height:16px; background-color: {{ $jenisColors[$index] }}; border-radius:3px;"></div>
+                        <div class="text-dark small">{{ $jenis->nama_jenis }} ({{ $jenisTotals[$index] }}%)</div>
                     </div>
                     @endforeach
                 </div>
@@ -76,15 +78,21 @@
     </div>
     
     <div class="col-md-6">
-        <div class="chart-container">
-            <h5 class="mb-3">Jumlah Sampah Berdasarkan Area Asal</h5>
-            <canvas id="barChart" style="width: 100%; height: 250px;"></canvas>
+        <div class="card bg-white text-dark p-3 shadow-sm">
+            <h5 class="mb-3 text-dark">Jumlah Sampah Berdasarkan Area Asal</h5>
+            <div style="height:250px;">
+                <canvas id="barChart" style="width: 100%; height: 100%;"></canvas>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="content-area">
-    <h4 class="mb-4">Rekap Neraca Pengelolaan Sampah (Juli 2024 - Juni 2025)</h4>
+    @if(isset($startDate) && isset($endDate))
+    <h4 class="mb-4">Rekap Neraca Pengelolaan Sampah ({{ $startDate->format('d M Y') }} - {{ $endDate->format('d M Y') }})</h4>
+    @else
+    <h4 class="mb-4">Rekap Neraca Pengelolaan Sampah</h4>
+    @endif
     
     <div class="table-responsive">
         <table class="data-table">
@@ -207,25 +215,25 @@
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        color: 'white'
+                        color: '#333'
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 },
                 x: {
                     ticks: {
-                        color: 'white'
+                        color: '#333'
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(0, 0, 0, 0.03)'
                     }
                 }
             },
             plugins: {
                 legend: {
                     labels: {
-                        color: 'white'
+                        color: '#333'
                     }
                 }
             }

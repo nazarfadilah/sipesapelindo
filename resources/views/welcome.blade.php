@@ -24,8 +24,24 @@
             @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
                     @auth
+                        @php
+                            $dashboardRoute = 'login';
+                            if (auth()->check()) {
+                                switch(auth()->user()->role) {
+                                    case 1:
+                                        $dashboardRoute = 'superadmin.dashboard';
+                                        break;
+                                    case 2:
+                                        $dashboardRoute = 'admin.dashboard';
+                                        break;
+                                    case 3:
+                                        $dashboardRoute = 'petugas.dashboard';
+                                        break;
+                                }
+                            }
+                        @endphp
                         <a
-                            href="{{ url('/dashboard') }}"
+                            href="{{ route($dashboardRoute) }}"
                             class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
                         >
                             Dashboard

@@ -8,12 +8,12 @@
             </div>
             <div class="col-6">
                 <div class="d-flex justify-content-end align-items-center h-100">
-                    <div class="time-display me-3" id="timeDisplay" style="font-size: 14px; color: #333;">
+                    <div class="time-display me-3" id="timeDisplay" style="font-size: 12px; color: #333;">
                         00.00.00 AM WITA
                     </div>
-                    <div class="d-flex align-items-center text-white me-3">
+                    <div class="d-flex align-items-center text-white me-2">
                         <span>Selamat Datang, Petugas</span>
-                        <i class="fas fa-circle text-success ms-2" style="font-size: 8px;"></i>
+                        <i class="fas fa-circle text-success ms-2" style="font-size: 5px;"></i>
                     </div>
                     <div class="text-white me-3" style="font-size: 14px;">
                         {{ now()->isoFormat('dddd, DD MMMM YYYY') }}

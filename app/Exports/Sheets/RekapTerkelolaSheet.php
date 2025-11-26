@@ -11,15 +11,18 @@ class RekapTerkelolaSheet implements FromView, WithTitle, ShouldAutoSize
 {
     private $data;
     private $totals;
+    private $tahun;
 
-    public function __construct(array $data, array $totals) {
+    public function __construct(array $data, array $totals, $tahun = null) {
         $this->data = $data;
         $this->totals = $totals;
+        $this->tahun = $tahun ?? date('Y');
     }
     public function view(): View {
         return view('admin.laporan.export_templates.rekap_terkelola', [
             'rekapData' => $this->data,
-            'totals' => $this->totals
+            'totals' => $this->totals,
+            'tahun' => $this->tahun
         ]);
     }
     public function title(): string {
