@@ -45,8 +45,6 @@ Route::prefix('superadmin')->name('superadmin.')->middleware('superadmin')->grou
     Route::prefix('laporan')->name('laporan.')->group(function () {
         Route::get('/', [SuperAdminLaporanController::class, 'index'])->name('index');
         Route::get('/export', [SuperAdminLaporanController::class, 'export'])->name('export');
-
-        // Bagian yang tadi error (conflict) sudah diperbaiki di sini:
         Route::get('/harian', [SuperAdminController::class, 'laporanHarian'])->name('harian');
         Route::get('/mingguan', [SuperAdminController::class, 'laporanMingguan'])->name('mingguan');
         Route::get('/bulanan', [SuperAdminController::class, 'laporanBulanan'])->name('bulanan');
@@ -69,7 +67,6 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/', [LaporanController::class, 'index'])->name('index');
         Route::get('/export', [LaporanController::class, 'export'])->name('export');
     });
-
     Route::get('/kelola-petugas', [AdminController::class, 'kelolaPetugas'])->name('kelola-petugas');
     Route::get('/tambah-petugas', [AdminController::class, 'tambahPetugas'])->name('tambah-petugas');
     Route::post('/store-petugas', [AdminController::class, 'storePetugas'])->name('store-petugas');
@@ -78,19 +75,19 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::delete('/delete-petugas/{id}', [AdminController::class, 'deletePetugas'])->name('delete-petugas');
 
     // Admin tidak memiliki akses input sampah
-    
+
     // Tabulasi Data (Admin dapat melihat dan edit)
     Route::prefix('data')->name('data.')->group(function() {
         // Sampah Terkelola
         Route::get('/sampah-terkelola', [AdminController::class, 'dataSampahTerkelola'])->name('sampah-terkelola');
         Route::get('/sampah-terkelola/{id}/edit', [AdminController::class, 'editSampahTerkelola'])->name('sampah-terkelola.edit');
         Route::put('/sampah-terkelola/{id}/update', [AdminController::class, 'updateSampahTerkelola'])->name('sampah-terkelola.update');
-        
+
         // Sampah Diserahkan
         Route::get('/sampah-diserahkan', [AdminController::class, 'dataSampahDiserahkan'])->name('sampah-diserahkan');
         Route::get('/sampah-diserahkan/{id}/edit', [AdminController::class, 'editSampahDiserahkan'])->name('sampah-diserahkan.edit');
         Route::put('/sampah-diserahkan/{id}/update', [AdminController::class, 'updateSampahDiserahkan'])->name('sampah-diserahkan.update');
-        
+
         // Dokumen (view only) - old route kept for compatibility
         Route::get('/dokumen', [AdminController::class, 'dataDokumen'])->name('dokumen');
     });
