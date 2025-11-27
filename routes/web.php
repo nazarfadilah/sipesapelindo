@@ -89,7 +89,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         // Sampah Diserahkan
         Route::get('/sampah-diserahkan', [AdminController::class, 'dataSampahDiserahkan'])->name('sampah-diserahkan');
         Route::get('/sampah-diserahkan/{id}/edit', [AdminController::class, 'editSampahDiserahkan'])->name('sampah-diserahkan.edit');
-        Route::put('/sampah-diserahkan/{id}/update', [AdminController::class, 'updateSampahDiserahkan'])->name('sampah-diserahkan.update');dokumen', [AdminController::class, 'dataDokumen'])->name('dokumen');
+        Route::put('/sampah-diserahkan/{id}/update', [AdminController::class, 'updateSampahDiserahkan'])->name('sampah-diserahkan.update');
+        
+        // Dokumen (view only) - old route kept for compatibility
+        Route::get('/dokumen', [AdminController::class, 'dataDokumen'])->name('dokumen');
     });
 
     // Kelola Dokumen (Admin dapat CRUD dokumen)
