@@ -3,16 +3,19 @@
     <div class="w-100 py-2">
         <div class="row mx-0">
             <div class="col-6 ps-4">
-                <h4 class="page-title mb-0 text-white">Dashboard Super Admin</h4>
-                <small class="text-white-50">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</small>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('superadmin.dashboard') }}" class="d-flex align-items-center">
+                        <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" style="width: 60px; height: auto; cursor: pointer; margin-left: -10px; background-color: white; padding: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </a>
+                    <div>
+                        <h4 class="page-title mb-0 text-white">Dashboard Super Admin</h4>
+                        <small class="text-white-50">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</small>
+                    </div>
+                </div>
             </div>
             <div class="col-6">
                 <div class="d-flex justify-content-end align-items-center h-100">
-<<<<<<< HEAD
-                    <div class="time-display me-3" id="timeDisplay" style="font-size: 14px; color: #fff;">
-=======
                     <div class="time-display me-3" id="timeDisplay" style="background-color: #ffffff; color: #1E3F8C; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
                         --:--:-- WITA
                     </div>
 

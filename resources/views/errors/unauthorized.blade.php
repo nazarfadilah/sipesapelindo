@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>403 - Akses Ditolak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * {
@@ -13,7 +15,7 @@
         }
         
         body {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,81 +29,19 @@
             max-width: 600px;
         }
         
-        .error-code {
-            font-size: 120px;
-            font-weight: bold;
-            color: #000000;
+        .error-box {
+            background-color: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
             margin-bottom: 20px;
-            line-height: 1;
         }
         
-        .error-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: #000000;
-            margin-bottom: 15px;
-        }
-        
-        .error-message {
-            font-size: 18px;
-            color: #666666;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
-        .btn-back {
-            display: inline-block;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #ffffff;
-            background-color: #000000;
-            text-decoration: none;
-            border: 2px solid #000000;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-back:hover {
-            background-color: #ffffff;
-            color: #000000;
-        }
-    </style>
-</head>
-<body>
-    <div class="error-container">
-        <div class="error-code">403</div>
-        <h1 class="error-title">Akses Ditolak</h1>
-        <p class="error-message">
-            Maaf, Anda tidak memiliki izin untuk mengakses halaman ini.<br>
-            Silakan kembali ke dashboard sesuai dengan role Anda.
-        </p>
-        
-        @php
-            $backRoute = 'login';
-            $backText = 'Kembali ke Beranda';
-            
-            if (auth()->check()) {
-                switch(auth()->user()->role) {
-                    case 1:
-                        $backRoute = 'superadmin.dashboard';
-                        $backText = 'Kembali ke Dashboard Super Admin';
-                        break;
-                    case 2:
-                        $backRoute = 'admin.dashboard';
-                        $backText = 'Kembali ke Dashboard Admin';
-                        break;
-                    case 3:
-                        $backRoute = 'petugas.dashboard';
-                        $backText = 'Kembali ke Dashboard Petugas';
-                        break;
-                }
-            }
-        @endphp
-        
-        <a href="{{ route($backRoute) }}" class="btn-back">{{ $backText }}</a>
-    </div>
-</body>
-</html>
         .error-code {
             font-size: 80px;
             font-weight: bold;
@@ -215,7 +155,8 @@
             <div class="error-code">403</div>
             <h1 class="error-title">Akses Ditolak</h1>
             <p class="error-message">
-                Halaman ini tidak tersedia.
+                Maaf, Anda tidak memiliki izin untuk mengakses halaman ini.<br>
+                Silakan kembali ke dashboard sesuai dengan role Anda.
             </p>
             
             @php
@@ -247,7 +188,6 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

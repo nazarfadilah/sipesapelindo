@@ -49,7 +49,10 @@
             <div class="col-md-5">
                 <div class="login-card p-4 text-center">
                     <div class="mb-4">
-                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="logo">
+                        <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Pelindo" class="logo" style="max-width: 100px;">
+                            <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" class="logo" style="max-width: 100px;">
+                        </div>
                         <h2 class="mt-2 fs-5 text-primary">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</h2>
                     </div>
 

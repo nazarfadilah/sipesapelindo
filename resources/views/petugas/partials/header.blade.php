@@ -3,8 +3,15 @@
     <div class="container-fluid px-4 py-2">
         <div class="row">
             <div class="col-6">
-                <h4 class="page-title mb-0 text-white">@yield('title', 'Dashboard')</h4>
-                <small class="text-white-50">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</small>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('petugas.dashboard') }}" class="d-flex align-items-center">
+                        <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" style="width: 60px; height: auto; cursor: pointer; margin-left: -10px; background-color: white; padding: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </a>
+                    <div>
+                        <h4 class="page-title mb-0 text-white">@yield('title', 'Dashboard')</h4>
+                        <small class="text-white-50">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</small>
+                    </div>
+                </div>
             </div>
             <div class="col-6">
                 <div class="d-flex justify-content-end align-items-center h-100">

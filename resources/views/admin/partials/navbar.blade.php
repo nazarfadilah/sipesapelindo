@@ -25,8 +25,15 @@
                     }
                 @endphp
 
-                <h4 class="app-title">{{ $title }}</h4>
-                <p class="app-subtitle">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</p>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center">
+                        <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" style="width: 60px; height: auto; cursor: pointer; margin-left: -10px; background-color: white; padding: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </a>
+                    <div>
+                        <h4 class="app-title">{{ $title }}</h4>
+                        <p class="app-subtitle">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</p>
+                    </div>
+                </div>
             </div>
             <div class="d-flex align-items-center gap-4">
                 <div class="time-display" id="timeDisplay">--:--:-- WITA</div>
