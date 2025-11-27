@@ -72,23 +72,6 @@ trait WithSweetAlert
     {
         return $this->successMessage("{$item} berhasil diexport!");
     }
-}
-
-    // Specific CRUD messages
-    protected function createdSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil ditambahkan!");
-    }
-
-    protected function updatedSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil diperbarui!");
-    }
-
-    protected function deletedSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil dihapus!");
-    }
 
     protected function createdError($item = 'Data', $error = '')
     {

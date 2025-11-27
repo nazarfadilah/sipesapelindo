@@ -193,7 +193,6 @@ class SuperAdminController extends Controller
                     $applyDateFilter($q);
                 })
                 ->sum('jumlah_berat');
-            $persenTerkelola = $totalKg > 0 ? ($terkelolaKg / $totalKg) * 100 : 0;
 
             // Sampah diserahkan
             $diserahkanKg = SampahDiserahkan::where('id_lokasi', $lokasi->id)
@@ -214,7 +213,12 @@ class SuperAdminController extends Controller
                 })
                 ->sum('jumlah_berat');
 
-            $persenDiserahkan = $totalKg > 0 ? (($diserahkanKg + $diserahkanLb3Kg) / $totalKg) * 100 : 0;
+            $totalDiserahkan = $diserahkanKg + $diserahkanLb3Kg;
+            $totalKeseluruhan = $terkelolaKg + $totalDiserahkan;
+            
+            // Persentase dari total keseluruhan (terkelola + diserahkan)
+            $persenTerkelolaFromTotal = $totalKeseluruhan > 0 ? ($terkelolaKg / $totalKeseluruhan) * 100 : 0;
+            $persenDiserahkanFromTotal = $totalKeseluruhan > 0 ? ($totalDiserahkan / $totalKeseluruhan) * 100 : 0;
             
             $neraca[] = [
                 'sumber' => $lokasi->nama_lokasi,
@@ -222,10 +226,13 @@ class SuperAdminController extends Controller
                 'lb3_kg' => $lb3Kg,
                 'total_kg' => $totalKg,
                 'terkelola_kg' => $terkelolaKg,
-                'persen_terkelola' => $persenTerkelola,
+                'persen_terkelola' => $totalKg > 0 ? ($terkelolaKg / $totalKg) * 100 : 0,
                 'diserahkan_kg' => $diserahkanKg,
                 'diserahkan_lb3_kg' => $diserahkanLb3Kg,
-                'persen_diserahkan' => $persenDiserahkan
+                'persen_diserahkan' => $totalKg > 0 ? ($totalDiserahkan / $totalKg) * 100 : 0,
+                'total_keseluruhan' => $totalKeseluruhan,
+                'persen_terkelola_from_total' => $persenTerkelolaFromTotal,
+                'persen_diserahkan_from_total' => $persenDiserahkanFromTotal
             ];
             
             // Menambahkan ke total
@@ -237,9 +244,13 @@ class SuperAdminController extends Controller
             $totals['diserahkan_lb3_kg'] += $diserahkanLb3Kg;
         }
         
-        // Menghitung persentase total
+        // Menghitung total keseluruhan dan persentase total
+        $totalKeseluruhanAll = $totals['terkelola_kg'] + $totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg'];
+        $totals['total_keseluruhan'] = $totalKeseluruhanAll;
         $totals['persen_terkelola'] = $totals['total_kg'] > 0 ? ($totals['terkelola_kg'] / $totals['total_kg']) * 100 : 0;
         $totals['persen_diserahkan'] = $totals['total_kg'] > 0 ? (($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg']) / $totals['total_kg']) * 100 : 0;
+        $totals['persen_terkelola_from_total'] = $totalKeseluruhanAll > 0 ? ($totals['terkelola_kg'] / $totalKeseluruhanAll) * 100 : 0;
+        $totals['persen_diserahkan_from_total'] = $totalKeseluruhanAll > 0 ? (($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg']) / $totalKeseluruhanAll) * 100 : 0;
         
         return view('superAdmin.dashboard', compact(
             'jenisSampah', 

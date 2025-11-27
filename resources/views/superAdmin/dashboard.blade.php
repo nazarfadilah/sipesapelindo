@@ -100,19 +100,18 @@
                 <tr>
                     <th rowspan="2">No</th>
                     <th rowspan="2">Sumber Sampah</th>
-                    <th colspan="2">Jumlah Timbulan Sampah (Per Bulan)</th>
-                    <th colspan="2">Jumlah Sampah Terkelola</th>
-                    <th rowspan="2">Presentase Sampah Terkelola (%)</th>
-                    <th colspan="2">Jumlah Sampah Limbah Diserahkan</th>
-                    <th rowspan="2">Presentase Sampah Limbah Diserahkan (%)</th>
+                    <th colspan="3">Jumlah Sampah</th>
+                    <th colspan="2">Pengelolaan Sampah (kg/bulan)</th>
+                    <th colspan="2">Jumlah Sampah Diserahkan (kg/bulan)</th>
                 </tr>
                 <tr>
-                    <th>Sampah (kg)</th>
-                    <th>LB3 (kg)</th>
-                    <th>Total Keseluruhan Sampah (kg)</th>
-                    <th>Keseluruhan (kg)</th>
-                    <th>Limbah (kg)</th>
-                    <th>Limbah (kg)</th>
+                    <th>Total Sampah Terkelola (kg/bulan)</th>
+                    <th>Total Sampah Diserahkan (kg/bulan)</th>
+                    <th>Total Keseluruhan (kg/bulan)</th>
+                    <th>Sampah Terkelola (kg/bulan)</th>
+                    <th>Persentase (%)</th>
+                    <th>Sampah Diserahkan (kg/bulan)</th>
+                    <th>Persentase (%)</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,26 +119,24 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $item['sumber'] }}</td>
-                    <td>{{ number_format($item['sampah_kg'], 2) }}</td>
-                    <td>{{ number_format($item['lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($item['total_kg'], 2) }}</td>
                     <td>{{ number_format($item['terkelola_kg'], 2) }}</td>
-                    <td>{{ number_format($item['persen_terkelola'], 2) }}%</td>
-                    <td>{{ number_format($item['diserahkan_kg'], 2) }}</td>
-                    <td>{{ number_format($item['diserahkan_lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($item['persen_diserahkan'], 2) }}%</td>
+                    <td>{{ number_format($item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['terkelola_kg'] + $item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['terkelola_kg'], 2) }}</td>
+                    <td>{{ number_format($item['persen_terkelola_from_total'], 2) }}%</td>
+                    <td>{{ number_format($item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['persen_diserahkan_from_total'], 2) }}%</td>
                 </tr>
                 @endforeach
                 <tr>
                     <td colspan="2" class="text-center">Total</td>
-                    <td>{{ number_format($totals['sampah_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['total_kg'], 2) }}</td>
                     <td>{{ number_format($totals['terkelola_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['persen_terkelola'], 2) }}%</td>
-                    <td>{{ number_format($totals['diserahkan_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['diserahkan_lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['persen_diserahkan'], 2) }}%</td>
+                    <td>{{ number_format($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['total_keseluruhan'], 2) }}</td>
+                    <td>{{ number_format($totals['terkelola_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['persen_terkelola_from_total'], 2) }}%</td>
+                    <td>{{ number_format($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['persen_diserahkan_from_total'], 2) }}%</td>
                 </tr>
             </tbody>
         </table>
@@ -149,6 +146,13 @@
 
 @push('scripts')
 <script>
+    // Data dari server
+    const jenisLabels = @json($jenisSampah->pluck('nama_jenis')->toArray());
+    const jenisTotalsData = @json($jenisTotals);
+    const jenisColorsData = @json($jenisColors);
+    const lokasiLabels = @json($lokasiAsals->pluck('nama_lokasi')->toArray());
+    const lokasiTotalsData = @json($lokasiTotals);
+    
     function updateFilterOptions() {
         const filterType = document.getElementById('filter_type').value;
         
@@ -176,10 +180,10 @@
     const pieChart = new Chart(pieCtx, {
         type: 'pie',
         data: {
-            labels: {!! json_encode($jenisSampah->pluck('nama_jenis')->toArray()) !!},
+            labels: jenisLabels,
             datasets: [{
-                data: {!! json_encode($jenisTotals) !!},
-                backgroundColor: {!! json_encode($jenisColors) !!},
+                data: jenisTotalsData,
+                backgroundColor: jenisColorsData,
                 borderWidth: 1
             }]
         },
@@ -199,10 +203,10 @@
     const barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
-            labels: {!! json_encode($lokasiAsals->pluck('nama_lokasi')->toArray()) !!},
+            labels: lokasiLabels,
             datasets: [{
                 label: 'Jumlah Sampah (kg)',
-                data: {!! json_encode($lokasiTotals) !!},
+                data: lokasiTotalsData,
                 backgroundColor: 'rgba(0, 191, 255, 0.7)',
                 borderColor: 'rgba(0, 191, 255, 1)',
                 borderWidth: 1

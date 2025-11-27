@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Dokumen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -186,8 +187,20 @@ class AdminController extends Controller
                 ->sum('total_berat');
 
             // Persentase diserahkan
+            $totalDiserahkan = $totalDiserahkanBiasa + $totalDiserahkanLB3;
+            $totalKeseluruhan = $totalTerkelola + $totalDiserahkan;
+            
             $persenDiserahkan = $totalSampahAll > 0
                 ? round((($totalDiserahkanBiasa + $totalDiserahkanLB3) / $totalSampahAll) * 100, 2)
+                : 0;
+                
+            // Persentase dari total keseluruhan (terkelola + diserahkan)
+            $persenTerkelolaFromTotal = $totalKeseluruhan > 0
+                ? round(($totalTerkelola / $totalKeseluruhan) * 100, 2)
+                : 0;
+                
+            $persenDiserahkanFromTotal = $totalKeseluruhan > 0
+                ? round($totalDiserahkan / $totalKeseluruhan * 100, 2)
                 : 0;
 
             $rekapData[] = [
@@ -199,7 +212,10 @@ class AdminController extends Controller
                 'persen_terkelola' => $persenTerkelola,
                 'diserahkan_biasa' => round($totalDiserahkanBiasa, 2),
                 'diserahkan_lb3' => round($totalDiserahkanLB3, 2),
-                'persen_diserahkan' => $persenDiserahkan
+                'persen_diserahkan' => $persenDiserahkan,
+                'total_keseluruhan' => round($totalKeseluruhan, 2),
+                'persen_terkelola_from_total' => $persenTerkelolaFromTotal,
+                'persen_diserahkan_from_total' => $persenDiserahkanFromTotal
             ];
         }
 
@@ -209,7 +225,9 @@ class AdminController extends Controller
         $totalSampahAll = array_sum(array_column($rekapData, 'total_sampah'));
         $totalTerkelola = array_sum(array_column($rekapData, 'terkelola'));
         $totalDiserahkanBiasa = array_sum(array_column($rekapData, 'diserahkan_biasa'));
-        $totalDiserahkanLB3 = array_sum(array_column($rekapData, 'diserahkan_lb3'));   
+        $totalDiserahkanLB3 = array_sum(array_column($rekapData, 'diserahkan_lb3'));
+        $totalDiserahkan = $totalDiserahkanBiasa + $totalDiserahkanLB3;
+        $totalKeseluruhan = $totalTerkelola + $totalDiserahkan;
 
         $persenTerkelolaTotal = $totalSampahAll > 0
             ? round(($totalTerkelola / $totalSampahAll) * 100, 2)
@@ -217,6 +235,14 @@ class AdminController extends Controller
 
         $persenDiserahkanTotal = $totalSampahAll > 0
             ? round((($totalDiserahkanBiasa + $totalDiserahkanLB3) / $totalSampahAll) * 100, 2)
+            : 0;
+            
+        $persenTerkelolaFromTotal = $totalKeseluruhan > 0
+            ? round(($totalTerkelola / $totalKeseluruhan) * 100, 2)
+            : 0;
+            
+        $persenDiserahkanFromTotal = $totalKeseluruhan > 0
+            ? round($totalDiserahkan / $totalKeseluruhan * 100, 2)
             : 0;
 
         return view('admin.dashboard', [
@@ -236,7 +262,10 @@ class AdminController extends Controller
             'persenTerkelolaTotal' => $persenTerkelolaTotal,
             'totalDiserahkanBiasa' => round($totalDiserahkanBiasa, 2),
             'totalDiserahkanLB3' => round($totalDiserahkanLB3, 2),
-            'persenDiserahkanTotal' => $persenDiserahkanTotal
+            'persenDiserahkanTotal' => $persenDiserahkanTotal,
+            'totalKeseluruhan' => round($totalKeseluruhan, 2),
+            'persenTerkelolaFromTotal' => $persenTerkelolaFromTotal,
+            'persenDiserahkanFromTotal' => $persenDiserahkanFromTotal
         ]);
     }
 
@@ -407,7 +436,7 @@ class AdminController extends Controller
         $filePath = $file->store('dokumen', 'public');
         
         Dokumen::create([
-            'id_user' => auth()->id(),
+            'id_user' => Auth::id(),
             'no_dokumen' => 'DOK-' . date('YmdHis'),
             'judul_dokumen' => $request->judul_dokumen,
             'file_dokumen' => $filePath,
