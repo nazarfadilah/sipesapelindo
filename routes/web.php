@@ -78,17 +78,18 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::delete('/delete-petugas/{id}', [AdminController::class, 'deletePetugas'])->name('delete-petugas');
 
     // Admin tidak memiliki akses input sampah
-
-    // Tabulasi Data (Admin hanya dapat melihat, tidak CRUD)
+    
+    // Tabulasi Data (Admin dapat melihat dan edit)
     Route::prefix('data')->name('data.')->group(function() {
-        // Sampah Terkelola (view only)
+        // Sampah Terkelola
         Route::get('/sampah-terkelola', [AdminController::class, 'dataSampahTerkelola'])->name('sampah-terkelola');
-
-        // Sampah Diserahkan (view only)
+        Route::get('/sampah-terkelola/{id}/edit', [AdminController::class, 'editSampahTerkelola'])->name('sampah-terkelola.edit');
+        Route::put('/sampah-terkelola/{id}/update', [AdminController::class, 'updateSampahTerkelola'])->name('sampah-terkelola.update');
+        
+        // Sampah Diserahkan
         Route::get('/sampah-diserahkan', [AdminController::class, 'dataSampahDiserahkan'])->name('sampah-diserahkan');
-
-        // Dokumen (view only) - old route kept for compatibility
-        Route::get('/dokumen', [AdminController::class, 'dataDokumen'])->name('dokumen');
+        Route::get('/sampah-diserahkan/{id}/edit', [AdminController::class, 'editSampahDiserahkan'])->name('sampah-diserahkan.edit');
+        Route::put('/sampah-diserahkan/{id}/update', [AdminController::class, 'updateSampahDiserahkan'])->name('sampah-diserahkan.update');dokumen', [AdminController::class, 'dataDokumen'])->name('dokumen');
     });
 
     // Kelola Dokumen (Admin dapat CRUD dokumen)

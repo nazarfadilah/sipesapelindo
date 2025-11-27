@@ -22,11 +22,12 @@
                     <thead class="bg-primary text-white">
                         <tr>
                             <th class="text-center sortable" width="5%">No</th>
-                            <th class="text-center sortable" width="15%">Jenis</th>
-                            <th class="text-center sortable" width="20%">Sumber</th>
-                            <th class="text-center sortable" width="15%">Berat (Kg)</th>
-                            <th class="text-center" width="20%">Foto</th>
-                            <th class="text-center sortable" width="15%">Tanggal</th>
+                            <th class="text-center sortable" width="13%">Jenis</th>
+                            <th class="text-center sortable" width="17%">Sumber</th>
+                            <th class="text-center sortable" width="12%">Berat (Kg)</th>
+                            <th class="text-center" width="17%">Foto</th>
+                            <th class="text-center sortable" width="13%">Tanggal</th>
+                            <th class="text-center" width="13%">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,6 +47,11 @@
                                 @endif
                             </td>
                             <td class="text-center">{{ \Carbon\Carbon::parse($sampah->tgl)->format('d-m-Y') }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('admin.data.sampah-terkelola.edit', $sampah->id_sampah) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
                         </tr>
                         @empty
                         <tr>
@@ -59,6 +65,11 @@
                                 </a>
                             </td>
                             <td class="text-center">23-09-2025</td>
+                            <td class="text-center">
+                                <a href="#" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>

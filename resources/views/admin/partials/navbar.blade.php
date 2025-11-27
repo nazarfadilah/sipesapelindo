@@ -26,7 +26,7 @@
                 @endphp
 
                 <h4 class="app-title">{{ $title }}</h4>
-                <p class="app-subtitle">Aplikasi Pengelolaan Sampah dan LS3 Pelindo Subregional Banjarmasin</p>
+                <p class="app-subtitle">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</p>
             </div>
             <div class="d-flex align-items-center gap-4">
                 <div class="time-display" id="timeDisplay">--:--:-- WITA</div>

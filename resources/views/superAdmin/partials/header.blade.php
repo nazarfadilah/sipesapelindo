@@ -4,7 +4,7 @@
         <div class="row mx-0">
             <div class="col-6 ps-4">
                 <h4 class="page-title mb-0 text-white">Dashboard Super Admin</h4>
-                <small class="text-white-50">Aplikasi Pengelolaan Sampah dan LB3 Pelindo Subregional Samarinda</small>
+                <small class="text-white-50">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</small>
             </div>
             <div class="col-6">
                 <div class="d-flex justify-content-end align-items-center h-100">

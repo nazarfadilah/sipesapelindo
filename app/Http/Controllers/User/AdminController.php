@@ -92,7 +92,8 @@ class AdminController extends Controller
 
         // Olah data untuk chart jenis sampah
         $jenisSampah = Jenis::all();
-        $jenisSampahData = [];
+        $jenisSampahDataTerkelola = [];
+        $jenisSampahDataDiserahkan = [];
         $jenisSampahLabels = [];
         $jenisSampahColors = [
             'rgb(255, 0, 0)',    // Red
@@ -106,28 +107,43 @@ class AdminController extends Controller
         foreach ($jenisSampah as $index => $jenis) {
             $jenisSampahLabels[] = $jenis->nama_jenis;
 
-            // Hitung total sampah per jenis
-            $total = $sampahTerkelola
+            // Hitung total sampah terkelola per jenis
+            $totalTerkelola = $sampahTerkelola
                 ->where('jenis', $jenis->nama_jenis)
                 ->sum('total_berat');
 
-            $jenisSampahData[] = $total;
+            $jenisSampahDataTerkelola[] = $totalTerkelola;
+
+            // Hitung total sampah diserahkan per jenis
+            $totalDiserahkan = $sampahDiserahkan
+                ->where('jenis', $jenis->nama_jenis)
+                ->sum('total_berat');
+
+            $jenisSampahDataDiserahkan[] = $totalDiserahkan;
         }
 
         // Olah data untuk chart total sampah per lokasi
         $lokasiSampah = LokasiAsal::all();
         $lokasiSampahLabels = [];
         $lokasiSampahData = [];
+        $lokasiSampahDataDiserahkan = [];
 
         foreach ($lokasiSampah as $lokasi) {
             $lokasiSampahLabels[] = $lokasi->nama_lokasi;
 
-            // Hitung total sampah per lokasi
-            $total = $sampahTerkelola
+            // Hitung total sampah terkelola per lokasi
+            $totalTerkelola = $sampahTerkelola
                 ->where('lokasi', $lokasi->nama_lokasi)
                 ->sum('total_berat');
 
-            $lokasiSampahData[] = $total;
+            $lokasiSampahData[] = $totalTerkelola;
+
+            // Hitung total sampah diserahkan per lokasi
+            $totalDiserahkan = $sampahDiserahkan
+                ->where('lokasi', $lokasi->nama_lokasi)
+                ->sum('total_berat');
+
+            $lokasiSampahDataDiserahkan[] = $totalDiserahkan;
         }
 
         // Data untuk tabel rekap
@@ -206,10 +222,12 @@ class AdminController extends Controller
         return view('admin.dashboard', [
             'periodText' => $periodText,
             'jenisSampahLabels' => json_encode($jenisSampahLabels),
-            'jenisSampahData' => json_encode($jenisSampahData),
+            'jenisSampahDataTerkelola' => json_encode($jenisSampahDataTerkelola),
+            'jenisSampahDataDiserahkan' => json_encode($jenisSampahDataDiserahkan),
             'jenisSampahColors' => json_encode($jenisSampahColors),
             'lokasiSampahLabels' => json_encode($lokasiSampahLabels),
             'lokasiSampahData' => json_encode($lokasiSampahData),
+            'lokasiSampahDataDiserahkan' => json_encode($lokasiSampahDataDiserahkan),
             'rekapData' => $rekapData,
             'totalSampahBiasa' => round($totalSampahBiasa, 2),
             'totalSampahLB3' => round($totalSampahLB3, 2),
@@ -643,5 +661,104 @@ class AdminController extends Controller
         
         return redirect()->route('admin.master.tujuan-sampah')
             ->with('success', 'Tujuan sampah berhasil dihapus');
+    }
+
+    /**
+     * Menampilkan form edit sampah terkelola
+     */
+    public function editSampahTerkelola($id_sampah)
+    {
+        $sampah = SampahTerkelola::with(['user', 'lokasiAsal', 'jenis'])->where('id_sampah', $id_sampah)->firstOrFail();
+        $lokasiAsals = LokasiAsal::all();
+        $jenisList = Jenis::all();
+        
+        return view('admin.data.edit-sampah-terkelola', compact('sampah', 'lokasiAsals', 'jenisList'));
+    }
+
+    /**
+     * Memperbarui data sampah terkelola
+     */
+    public function updateSampahTerkelola(Request $request, $id_sampah)
+    {
+        $sampah = SampahTerkelola::where('id_sampah', $id_sampah)->firstOrFail();
+        
+        $request->validate([
+            'id_lokasi' => 'required|exists:lokasi_asals,id',
+            'id_jenis' => 'required|exists:jenis,id',
+            'jumlah_berat' => 'required|numeric|min:0',
+            'tgl' => 'required|date',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+        
+        $sampah->id_lokasi = $request->id_lokasi;
+        $sampah->id_jenis = $request->id_jenis;
+        $sampah->jumlah_berat = $request->jumlah_berat;
+        $sampah->tgl = $request->tgl;
+        
+        if($request->hasFile('foto')) {
+            if($sampah->foto && Storage::exists('public/' . $sampah->foto)) {
+                Storage::delete('public/' . $sampah->foto);
+            }
+            
+            $file = $request->file('foto');
+            $filePath = $file->store('sampah-terkelola', 'public');
+            $sampah->foto = $filePath;
+        }
+        
+        $sampah->save();
+        
+        return redirect()->route('admin.data.sampah-terkelola')
+            ->with('success', 'Data sampah terkelola berhasil diperbarui');
+    }
+
+    /**
+     * Menampilkan form edit sampah diserahkan
+     */
+    public function editSampahDiserahkan($id)
+    {
+        $sampah = SampahDiserahkan::with(['user', 'lokasiAsal', 'jenis', 'tujuanSampah'])->findOrFail($id);
+        $lokasiAsals = LokasiAsal::all();
+        $jenisList = Jenis::all();
+        $tujuanSampahs = TujuanSampah::all();
+        
+        return view('admin.data.edit-sampah-diserahkan', compact('sampah', 'lokasiAsals', 'jenisList', 'tujuanSampahs'));
+    }
+
+    /**
+     * Memperbarui data sampah diserahkan
+     */
+    public function updateSampahDiserahkan(Request $request, $id)
+    {
+        $sampah = SampahDiserahkan::findOrFail($id);
+        
+        $request->validate([
+            'id_lokasi' => 'required|exists:lokasi_asals,id',
+            'id_jenis' => 'required|exists:jenis,id',
+            'id_diserahkan' => 'required|exists:tujuan_sampahs,id',
+            'jumlah_berat' => 'required|numeric|min:0',
+            'tgl' => 'required|date',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+        
+        $sampah->id_lokasi = $request->id_lokasi;
+        $sampah->id_jenis = $request->id_jenis;
+        $sampah->id_diserahkan = $request->id_diserahkan;
+        $sampah->jumlah_berat = $request->jumlah_berat;
+        $sampah->tgl = $request->tgl;
+        
+        if($request->hasFile('foto')) {
+            if($sampah->foto && Storage::exists('public/' . $sampah->foto)) {
+                Storage::delete('public/' . $sampah->foto);
+            }
+            
+            $file = $request->file('foto');
+            $filePath = $file->store('sampah-diserahkan', 'public');
+            $sampah->foto = $filePath;
+        }
+        
+        $sampah->save();
+        
+        return redirect()->route('admin.data.sampah-diserahkan')
+            ->with('success', 'Data sampah diserahkan berhasil diperbarui');
     }
 }

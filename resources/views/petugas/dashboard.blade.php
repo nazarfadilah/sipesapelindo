@@ -7,21 +7,36 @@
     <div class="bg-primary text-white p-4 rounded mb-4">
         <h4 class="mb-0">Halo Selamat Datang Di Dashboard {{ Auth::user()->name ?? 'name_petugas' }}</h4>
     </div>
-
+    
     <!-- Filter Periode -->
     <div class="bg-white p-4 rounded shadow-sm mb-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold m-0">Statistik Sampah</h5>
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle border" type="button" id="periodFilter" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-calendar-alt me-2"></i>
-                    <span id="selectedPeriod">Minggu Ini</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="periodFilter">
-                    <li><a class="dropdown-item" href="#" data-period="daily">Hari Ini</a></li>
-                    <li><a class="dropdown-item active" href="#" data-period="weekly">Minggu Ini</a></li>
-                    <li><a class="dropdown-item" href="#" data-period="monthly">Bulan Ini</a></li>
-                </ul>
+            <div class="d-flex gap-2">
+                <!-- Filter Tipe Sampah -->
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle border" type="button" id="typeFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-2"></i>
+                        <span id="selectedType">Semua Sampah</span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="typeFilter">
+                        <li><a class="dropdown-item active" href="#" data-type="both">Semua Sampah</a></li>
+                        <li><a class="dropdown-item" href="#" data-type="terkelola">Sampah Terkelola</a></li>
+                        <li><a class="dropdown-item" href="#" data-type="diserahkan">Sampah Diserahkan</a></li>
+                    </ul>
+                </div>
+                <!-- Filter Periode -->
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle border" type="button" id="periodFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <span id="selectedPeriod">Minggu Ini</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="periodFilter">
+                        <li><a class="dropdown-item" href="#" data-period="daily">Hari Ini</a></li>
+                        <li><a class="dropdown-item active" href="#" data-period="weekly">Minggu Ini</a></li>
+                        <li><a class="dropdown-item" href="#" data-period="monthly">Bulan Ini</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -221,16 +236,42 @@
             });
         }
 
-        // Function to load data based on period
-        async function loadData(period) {
+        // Function to load data based on period and type
+        let currentType = 'both';
+        let currentPeriod = 'weekly';
+
+        async function loadData(period = currentPeriod, type = currentType) {
             try {
-                const response = await fetch(`/petugas/dashboard-stats?period=${period}`);
+                const response = await fetch(`/petugas/dashboard-stats?period=${period}&type=${type}`);
                 const data = await response.json();
                 initializeCharts(data);
+                currentPeriod = period;
+                currentType = type;
             } catch (error) {
                 console.error('Error loading data:', error);
             }
         }
+
+        // Handle type filter changes
+        document.querySelectorAll('[data-type]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active state
+                document.querySelectorAll('[data-type]').forEach(el => {
+                    el.classList.remove('active');
+                });
+                e.target.classList.add('active');
+
+                // Update button text
+                const typeText = e.target.textContent;
+                document.getElementById('selectedType').textContent = typeText;
+
+                // Load new data
+                const type = e.target.getAttribute('data-type');
+                loadData(currentPeriod, type);
+            });
+        });
 
         // Handle period filter changes
         document.querySelectorAll('[data-period]').forEach(item => {
@@ -248,12 +289,13 @@
                 document.getElementById('selectedPeriod').textContent = periodText;
 
                 // Load new data
-                loadData(e.target.dataset.period);
+                const period = e.target.getAttribute('data-period');
+                loadData(period, currentType);
             });
         });
 
         // Initial load
-        loadData('daily');
+        loadData('weekly', 'both');
     });
 </script>
 @endpush

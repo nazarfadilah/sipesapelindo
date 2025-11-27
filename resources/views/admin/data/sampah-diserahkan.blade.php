@@ -20,14 +20,15 @@
                 <table class="table table-bordered table-striped" id="sampahDiserahkanTable">
                     <thead class="bg-primary text-white">
                         <tr>
-                            <th class="text-center sortable" width="5%">No</th>
-                            <th class="text-center sortable" width="10%">User</th>
-                            <th class="text-center sortable" width="15%">Sumber</th>
-                            <th class="text-center sortable" width="12%">Jenis</th>
-                            <th class="text-center sortable" width="10%">Berat (Kg)</th>
-                            <th class="text-center sortable" width="15%">Tujuan</th>
-                            <th class="text-center" width="13%">Foto</th>
+                            <th class="text-center sortable" width="4%">No</th>
+                            <th class="text-center sortable" width="9%">User</th>
+                            <th class="text-center sortable" width="13%">Sumber</th>
+                            <th class="text-center sortable" width="11%">Jenis</th>
+                            <th class="text-center sortable" width="9%">Berat (Kg)</th>
+                            <th class="text-center sortable" width="13%">Tujuan</th>
+                            <th class="text-center" width="11%">Foto</th>
                             <th class="text-center sortable" width="10%">Tanggal</th>
+                            <th class="text-center" width="10%">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +50,11 @@
                                 @endif
                             </td>
                             <td class="text-center">{{ \Carbon\Carbon::parse($sampah->tgl)->format('d-m-Y') }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('admin.data.sampah-diserahkan.edit', $sampah->id) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
                         </tr>
                         @empty
                         <tr>
@@ -64,6 +70,11 @@
                                 </a>
                             </td>
                             <td class="text-center">23-09-2025</td>
+                            <td class="text-center">
+                                <a href="#" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>

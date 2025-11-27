@@ -50,7 +50,7 @@
                 <div class="login-card p-4 text-center">
                     <div class="mb-4">
                         <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="logo">
-                        <h2 class="mt-2 fs-5 text-primary"> P-Waste (Aplikasi Pengelolaan Sampah Pelindo Subregional Banjarmasin) </h2>
+                        <h2 class="mt-2 fs-5 text-primary">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</h2>
                     </div>
 
                     @if(session('error'))

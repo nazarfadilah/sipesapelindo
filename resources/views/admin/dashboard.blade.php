@@ -64,11 +64,18 @@
     </div>
     
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Distribusi Jenis Sampah</h5>
-                    <div class="chart-container">
+        <div class="col-md-6 d-flex">
+            <div class="card shadow w-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Distribusi Jenis Sampah</h5>
+                        <select id="jenisTypeFilter" class="form-select form-select-sm" style="width: 180px;">
+                            <option value="both">Semua Sampah</option>
+                            <option value="terkelola">Sampah Terkelola</option>
+                            <option value="diserahkan">Sampah Diserahkan</option>
+                        </select>
+                    </div>
+                    <div class="chart-container flex-grow-1">
                         <canvas id="pieChart"></canvas>
                     </div>
                     <div class="chart-legend mt-3" id="pieChartLegend">
@@ -79,11 +86,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Total Sampah per Lokasi</h5>
-                    <div class="chart-container">
+        <div class="col-md-6 d-flex">
+            <div class="card shadow w-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Total Sampah per Lokasi</h5>
+                        <select id="lokasiTypeFilter" class="form-select form-select-sm" style="width: 180px;">
+                            <option value="both">Semua Sampah</option>
+                            <option value="terkelola">Sampah Terkelola</option>
+                            <option value="diserahkan">Sampah Diserahkan</option>
+                        </select>
+                    </div>
+                    <div class="chart-container flex-grow-1">
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
@@ -181,22 +195,25 @@
         
         // Get data from PHP variables
         const jenisSampahLabels = {!! $jenisSampahLabels !!};
-        const jenisSampahData = {!! $jenisSampahData !!};
+        const jenisSampahDataTerkelola = {!! $jenisSampahDataTerkelola !!};
+        const jenisSampahDataDiserahkan = {!! $jenisSampahDataDiserahkan !!};
         const jenisSampahColors = {!! $jenisSampahColors !!};
         const lokasiSampahLabels = {!! $lokasiSampahLabels !!};
         const lokasiSampahData = {!! $lokasiSampahData !!};
+        const lokasiSampahDataDiserahkan = {!! $lokasiSampahDataDiserahkan !!};
         
-        // Calculate total for percentages
-        const totalJenisSampah = jenisSampahData.reduce((a, b) => a + b, 0);
+        // Calculate combined data (terkelola + diserahkan)
+        const jenisSampahDataCombined = jenisSampahDataTerkelola.map((val, idx) => val + jenisSampahDataDiserahkan[idx]);
+        const lokasiSampahDataCombined = lokasiSampahData.map((val, idx) => val + lokasiSampahDataDiserahkan[idx]);
         
         // Pie Chart
         const pieCtx = document.getElementById('pieChart').getContext('2d');
-        const pieChart = new Chart(pieCtx, {
+        let pieChart = new Chart(pieCtx, {
             type: 'pie',
             data: {
                 labels: jenisSampahLabels,
                 datasets: [{
-                    data: jenisSampahData,
+                    data: jenisSampahDataCombined,
                     backgroundColor: jenisSampahColors,
                     borderWidth: 1
                 }]
@@ -213,33 +230,57 @@
             }
         });
         
-        // Generate dynamic legend for pie chart
-        const legendContainer = document.querySelector('#pieChartLegend .d-flex');
-        legendContainer.innerHTML = ''; // Clear existing content
+        // Function to update pie chart legend
+        function updatePieChartLegend(dataToUse) {
+            const totalJenisSampah = dataToUse.reduce((a, b) => a + b, 0);
+            const legendContainer = document.querySelector('#pieChartLegend .d-flex');
+            legendContainer.innerHTML = '';
+            
+            jenisSampahLabels.forEach((label, index) => {
+                const percentage = totalJenisSampah > 0 ? ((dataToUse[index] / totalJenisSampah) * 100).toFixed(2) : '0.00';
+                const color = jenisSampahColors[index];
+                
+                const legendItem = document.createElement('div');
+                legendItem.classList.add('d-flex', 'align-items-center', 'me-3', 'mb-2');
+                legendItem.innerHTML = `
+                    <div style="width: 15px; height: 15px; background-color: ${color}; margin-right: 5px;"></div>
+                    <small>${label} (${percentage}%)</small>
+                `;
+                
+                legendContainer.appendChild(legendItem);
+            });
+        }
         
-        jenisSampahLabels.forEach((label, index) => {
-            const percentage = totalJenisSampah > 0 ? ((jenisSampahData[index] / totalJenisSampah) * 100).toFixed(2) : '0.00';
-            const color = jenisSampahColors[index];
+        // Initial pie chart legend
+        updatePieChartLegend(jenisSampahDataCombined);
+        
+        // Pie chart filter handler
+        $('#jenisTypeFilter').on('change', function() {
+            const filterType = $(this).val();
+            let dataToUse;
             
-            const legendItem = document.createElement('div');
-            legendItem.classList.add('d-flex', 'align-items-center', 'me-3', 'mb-2');
-            legendItem.innerHTML = `
-                <div style="width: 15px; height: 15px; background-color: ${color}; margin-right: 5px;"></div>
-                <small>${label} (${percentage}%)</small>
-            `;
+            if (filterType === 'terkelola') {
+                dataToUse = jenisSampahDataTerkelola;
+            } else if (filterType === 'diserahkan') {
+                dataToUse = jenisSampahDataDiserahkan;
+            } else {
+                dataToUse = jenisSampahDataCombined;
+            }
             
-            legendContainer.appendChild(legendItem);
+            pieChart.data.datasets[0].data = dataToUse;
+            pieChart.update();
+            updatePieChartLegend(dataToUse);
         });
         
         // Bar Chart for Total Sampah per Lokasi
         const barCtx = document.getElementById('barChart').getContext('2d');
-        const barChart = new Chart(barCtx, {
+        let barChart = new Chart(barCtx, {
             type: 'bar',
             data: {
                 labels: lokasiSampahLabels,
                 datasets: [{
                     label: 'Total Sampah (kg)',
-                    data: lokasiSampahData,
+                    data: lokasiSampahDataCombined,
                     backgroundColor: '#1E3F8C',
                     borderColor: '#1E3F8C',
                     borderWidth: 1
@@ -263,8 +304,37 @@
                             minRotation: 45
                         }
                     }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Total Sampah (kg): ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
                 }
             }
+        });
+        
+        // Bar chart filter handler
+        $('#lokasiTypeFilter').on('change', function() {
+            const filterType = $(this).val();
+            let dataToUse;
+            
+            if (filterType === 'terkelola') {
+                dataToUse = lokasiSampahData;
+            } else if (filterType === 'diserahkan') {
+                dataToUse = lokasiSampahDataDiserahkan;
+            } else {
+                dataToUse = lokasiSampahDataCombined;
+            }
+            
+            barChart.data.datasets[0].data = dataToUse;
+            barChart.update();
         });
     });
 </script>
