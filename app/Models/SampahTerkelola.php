@@ -10,6 +10,7 @@ class SampahTerkelola extends Model
     use HasFactory;
 
     protected $table = 'sampah_terkelolas';
+    protected $primaryKey = 'id_sampah';
     
     protected $fillable = [
         'id_user',

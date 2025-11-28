@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('id_user')->constrained('users');
             $table->foreignId('id_lokasi')->constrained('lokasi_asals');
             $table->foreignId('id_jenis')->constrained('jenis');
-            $table->integer('jumlah_berat');
+            $table->decimal('jumlah_berat', 10, 2);
             $table->date('tgl');
             $table->string('foto')->nullable();
             $table->timestamps();

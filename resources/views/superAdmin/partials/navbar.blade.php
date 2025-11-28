@@ -51,10 +51,6 @@
                 </button>
                 <ul class="dropdown-menu mt-1">
                     <li>
-<<<<<<< HEAD
-                        <a class="dropdown-item {{ request()->is('superadmin/laporan/harian') ? 'active text-white' : '' }}" href="{{ route('superadmin.laporan.harian') }}">
-                            Laporan Harian
-=======
                         <a class="dropdown-item {{ request()->is('superadmin/laporan') && !request()->is('superadmin/laporan/*') ? 'active text-white' : '' }}" href="{{ route('superadmin.laporan.index') }}">
                             <i class="fas fa-file-export me-2"></i>Export Laporan
                         </a>
@@ -63,34 +59,21 @@
                     <li>
                         <a class="dropdown-item {{ request()->is('superadmin/laporan/harian') ? 'active text-white' : '' }}" href="{{ route('superadmin.laporan.harian') }}">
                             <i class="fas fa-calendar-day me-2"></i>Laporan Harian
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item {{ request()->is('superadmin/laporan/mingguan') ? 'active' : '' }}" href="{{ route('superadmin.laporan.mingguan') }}">
-<<<<<<< HEAD
-                            Laporan Mingguan
-=======
                             <i class="fas fa-calendar-week me-2"></i>Laporan Mingguan
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item {{ request()->is('superadmin/laporan/bulanan') ? 'active' : '' }}" href="{{ route('superadmin.laporan.bulanan') }}">
-<<<<<<< HEAD
-                            Laporan Bulanan
-=======
                             <i class="fas fa-calendar-alt me-2"></i>Laporan Bulanan
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item {{ request()->is('superadmin/laporan/tahunan') ? 'active' : '' }}" href="{{ route('superadmin.laporan.tahunan') }}">
-<<<<<<< HEAD
-                            Laporan Tahunan
-=======
                             <i class="fas fa-calendar me-2"></i>Laporan Tahunan
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
                         </a>
                     </li>
                 </ul>

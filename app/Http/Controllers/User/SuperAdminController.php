@@ -30,6 +30,7 @@ class SuperAdminController extends Controller
         $month = $request->get('month', date('m'));
         $week = $request->get('week', 1);
         $day = $request->get('day', date('Y-m-d'));
+        $dataType = $request->get('data_type', 'both'); // both, terkelola, diserahkan
         
         // Query dasar untuk sampah terkelola dan diserahkan
         $queryTerkelola = SampahTerkelola::query();
@@ -114,20 +115,33 @@ class SuperAdminController extends Controller
         $jenisColors = ['#FF0000', '#00FF00', '#FFFF00', '#0000FF', '#FF00FF', '#00FFFF', '#FF9900', '#9900FF', '#009900'];
         $jenisTotals = [];
         
-        $totalSampah = $queryTerkelola->sum('jumlah_berat') + $queryDiserahkan->sum('jumlah_berat');
+        // Hitung total berdasarkan tipe data yang dipilih
+        $totalSampah = 0;
+        if ($dataType == 'both' || $dataType == 'terkelola') {
+            $totalSampah += $queryTerkelola->sum('jumlah_berat');
+        }
+        if ($dataType == 'both' || $dataType == 'diserahkan') {
+            $totalSampah += $queryDiserahkan->sum('jumlah_berat');
+        }
         
         foreach ($jenisSampah as $index => $jenis) {
-            $totalJenis = SampahTerkelola::where('id_jenis', $jenis->id)
-                ->where(function($query) use ($applyDateFilter) {
-                    $applyDateFilter($query);
-                })
-                ->sum('jumlah_berat');
+            $totalJenis = 0;
+            
+            if ($dataType == 'both' || $dataType == 'terkelola') {
+                $totalJenis += SampahTerkelola::where('id_jenis', $jenis->id)
+                    ->where(function($query) use ($applyDateFilter) {
+                        $applyDateFilter($query);
+                    })
+                    ->sum('jumlah_berat');
+            }
 
-            $totalJenis += SampahDiserahkan::where('id_jenis', $jenis->id)
-                ->where(function($query) use ($applyDateFilter) {
-                    $applyDateFilter($query);
-                })
-                ->sum('jumlah_berat');
+            if ($dataType == 'both' || $dataType == 'diserahkan') {
+                $totalJenis += SampahDiserahkan::where('id_jenis', $jenis->id)
+                    ->where(function($query) use ($applyDateFilter) {
+                        $applyDateFilter($query);
+                    })
+                    ->sum('jumlah_berat');
+            }
             
             $jenisTotals[] = $totalSampah > 0 ? round(($totalJenis / $totalSampah) * 100, 1) : 0;
         }
@@ -137,17 +151,23 @@ class SuperAdminController extends Controller
         $lokasiTotals = [];
         
         foreach ($lokasiAsals as $lokasi) {
-            $totalLokasi = SampahTerkelola::where('id_lokasi', $lokasi->id)
-                ->where(function($query) use ($applyDateFilter) {
-                    $applyDateFilter($query);
-                })
-                ->sum('jumlah_berat');
+            $totalLokasi = 0;
+            
+            if ($dataType == 'both' || $dataType == 'terkelola') {
+                $totalLokasi += SampahTerkelola::where('id_lokasi', $lokasi->id)
+                    ->where(function($query) use ($applyDateFilter) {
+                        $applyDateFilter($query);
+                    })
+                    ->sum('jumlah_berat');
+            }
 
-            $totalLokasi += SampahDiserahkan::where('id_lokasi', $lokasi->id)
-                ->where(function($query) use ($applyDateFilter) {
-                    $applyDateFilter($query);
-                })
-                ->sum('jumlah_berat');
+            if ($dataType == 'both' || $dataType == 'diserahkan') {
+                $totalLokasi += SampahDiserahkan::where('id_lokasi', $lokasi->id)
+                    ->where(function($query) use ($applyDateFilter) {
+                        $applyDateFilter($query);
+                    })
+                    ->sum('jumlah_berat');
+            }
 
             $lokasiTotals[] = $totalLokasi;
         }

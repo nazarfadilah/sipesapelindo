@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Pwaste (Aplikasi Pengelolaan Sampah Pelindo Subregional Kalimantan)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: url('{{ asset('assets/img/bg-pelindo.jpg') }}') no-repeat center center fixed;
+            background: url('{{ asset('assets/img/bg-pelindo(1).jpg') }}') no-repeat center center fixed;
             background-size: cover;
             font-family: Arial, sans-serif;
             height: 100vh;
@@ -51,7 +52,7 @@
                     <div class="mb-4">
                         <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
                             <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Pelindo" class="logo" style="max-width: 100px;">
-                            <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" class="logo" style="max-width: 100px;">
+                            <img src="{{ asset('assets/img/pwaste.png') }}" alt="Logo PWaste" class="logo" style="max-width: 130px;">
                         </div>
                         <h2 class="mt-2 fs-5 text-primary">Aplikasi Pengelolaan Sampah Pelabuhan Banjarmasin</h2>
                     </div>

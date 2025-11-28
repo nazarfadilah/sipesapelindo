@@ -75,9 +75,13 @@
 
         .app-container {
             flex: 1;
-            /* padding: 20px; */
             width: 100%;
-            max-width: auto;
+        }
+
+        .content-wrapper {
+            padding: 20px;
+            width: 100%;
+            max-width: 1500px;
             margin: 0 auto;
         }
 
@@ -106,7 +110,7 @@
             background-color: var(--white);
             padding: 0.55rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .app-navbar .nav-link {
@@ -149,12 +153,35 @@
             color: var(--primary-color);
         }
 
-        .content-area {
+        /* Content Area Variants - untuk digunakan di masing-masing blade */
+        .content-area-dashboard {
             background-color: var(--white);
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-area-table {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .content-area-form {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .filter-form {
@@ -396,17 +423,162 @@
             border-radius: 3px;
         }
 
-        /* Content Area Styling */
-        .content-area {
-            background-color: var(--white);
-            padding: 1.5rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
+        /* Content Area Styling removed - use variants instead */
 
         .filter-form {
             margin-bottom: 2rem;
+        }
+
+        /* ===== RESPONSIVE MOBILE (HANYA AKTIF DI LAYAR KECIL) ===== */
+        @media (max-width: 768px) {
+            /* Header Mobile */
+            .app-header {
+                padding: 0.8rem 1rem !important;
+            }
+            
+            .app-header .row {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .app-header .col-6 {
+                width: 100%;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            .app-header h4 {
+                font-size: 16px !important;
+            }
+            
+            .app-header small {
+                font-size: 11px !important;
+            }
+            
+            .app-header img {
+                width: 55px !important;
+                margin-left: 0 !important;
+            }
+            
+            .app-header .d-flex {
+                flex-wrap: wrap;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+            }
+            
+            .time-display {
+                font-size: 12px !important;
+                padding: 4px 8px !important;
+            }
+            
+            .logout-btn {
+                font-size: 12px !important;
+                padding: 4px 10px !important;
+            }
+
+            /* Navbar Mobile */
+            .app-navbar {
+                padding: 0.5rem !important;
+            }
+            
+            .app-navbar .d-flex {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.5rem !important;
+            }
+            
+            .app-navbar .btn {
+                width: 100%;
+                justify-content: center;
+                font-size: 14px;
+                padding: 0.6rem 1rem !important;
+            }
+            
+            .app-navbar .dropdown {
+                width: 100%;
+            }
+            
+            .app-navbar .dropdown-toggle {
+                width: 100%;
+            }
+
+            /* Content Mobile */
+            .content-area-dashboard,
+            .content-area-table,
+            .content-area-form {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .filter-form {
+                padding: 1rem !important;
+            }
+            
+            .filter-form .d-flex {
+                flex-direction: column !important;
+                gap: 0.8rem !important;
+            }
+            
+            .filter-form .me-3 {
+                margin-right: 0 !important;
+                margin-bottom: 0.5rem;
+            }
+            
+            .filter-form label {
+                display: block;
+                margin-bottom: 0.3rem;
+            }
+
+            /* Table Mobile - Scroll Horizontal */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .data-table {
+                min-width: 800px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                font-size: 12px;
+                padding: 0.5rem !important;
+                white-space: nowrap;
+            }
+
+            /* Chart Mobile */
+            .chart-container {
+                height: 250px !important;
+                padding: 1rem !important;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            canvas {
+                max-height: 200px !important;
+            }
+
+            /* Stats Card Mobile */
+            .stats-card {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .stats-card .title {
+                font-size: 14px !important;
+            }
+            
+            .stats-card .value {
+                font-size: 20px !important;
+            }
+
+            /* Footer Mobile */
+            .app-footer {
+                padding: 1rem !important;
+                font-size: 12px;
+            }
         }
     </style>
     @stack('styles')
@@ -416,15 +588,75 @@
         @include('superAdmin.partials.header')
         @include('superAdmin.partials.navbar')
 
-        @yield('content')
+        <div class="content-wrapper">
+            @yield('content')
+        </div>
 
         @include('superAdmin.partials.footer')
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+    // Global function untuk konfirmasi kembali
+    function confirmBack(url) {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Apakah Anda yakin ingin kembali? Data yang telah dimasukkan tidak akan tersimpan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Kembali',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+    
+    // Global function untuk setup form confirmation
+    function setupFormConfirmation(formId, message) {
+        document.addEventListener('DOMContentLoaded', function() {
+            let isSubmitting = false;
+            const form = document.getElementById(formId);
+            
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Simpan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            isSubmitting = true;
+                            form.submit();
+                        }
+                    });
+                });
+            }
+        });
+    }
+    </script>
+    
     @stack('scripts')
 </body>
 </html>
+
