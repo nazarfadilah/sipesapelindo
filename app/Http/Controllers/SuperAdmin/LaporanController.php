@@ -354,8 +354,4 @@ class LaporanController extends Controller
         ];
         return $months[$monthName] ?? $monthName;
     }
-<<<<<<< HEAD
-}
-=======
->>>>>>> 6e89e57f051786d5604936eff210660844d38f90
 }

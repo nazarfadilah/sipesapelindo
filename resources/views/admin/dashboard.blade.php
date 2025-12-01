@@ -116,18 +116,17 @@
                         <tr>
                             <th rowspan="2">No</th>
                             <th rowspan="2">Sumber Sampah</th>
-                            <th colspan="3" class="text-center">Jumlah Timbulan Sampah</th>
+                            <th colspan="3" class="text-center">Jumlah Sampah</th>
                             <th colspan="2" class="text-center">Pengelolaan Sampah (kg/bulan)</th>
-                            <th colspan="3" class="text-center">Jumlah Sampah Diserahkan (kg/bulan)</th>
+                            <th colspan="2" class="text-center">Jumlah Sampah Diserahkan (kg/bulan)</th>
                         </tr>
                         <tr>
-                            <th>Sampah (kg/bulan)</th>
-                            <th>LB3 (kg/bulan)</th>
-                            <th>Total Sampah (kg/bulan)</th>
-                            <th>Terkelola (kg/bulan)</th>
+                            <th>Total Sampah Terkelola (kg/bulan)</th>
+                            <th>Total Sampah Diserahkan (kg/bulan)</th>
+                            <th>Total Keseluruhan (kg/bulan)</th>
+                            <th>Sampah Terkelola (kg/bulan)</th>
                             <th>Persentase (%)</th>
-                            <th>Sampah (kg/bulan)</th>
-                            <th>LB3 (kg/bulan)</th>
+                            <th>Sampah Diserahkan (kg/bulan)</th>
                             <th>Persentase (%)</th>
                         </tr>
                     </thead>
@@ -136,26 +135,24 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $data['lokasi'] }}</td>
-                            <td>{{ number_format($data['sampah_biasa'], 2) }}</td>
-                            <td>{{ number_format($data['sampah_lb3'], 2) }}</td>
-                            <td>{{ number_format($data['total_sampah'], 2) }}</td>
                             <td>{{ number_format($data['terkelola'], 2) }}</td>
-                            <td>{{ number_format($data['persen_terkelola'], 2) }}%</td>
-                            <td>{{ number_format($data['diserahkan_biasa'], 2) }}</td>
-                            <td>{{ number_format($data['diserahkan_lb3'], 2) }}</td>
-                            <td>{{ number_format($data['persen_diserahkan'], 2) }}%</td>
+                            <td>{{ number_format($data['diserahkan_biasa'] + $data['diserahkan_lb3'], 2) }}</td>
+                            <td>{{ number_format($data['total_keseluruhan'], 2) }}</td>
+                            <td>{{ number_format($data['terkelola'], 2) }}</td>
+                            <td>{{ number_format($data['persen_terkelola_from_total'], 2) }}%</td>
+                            <td>{{ number_format($data['diserahkan_biasa'] + $data['diserahkan_lb3'], 2) }}</td>
+                            <td>{{ number_format($data['persen_diserahkan_from_total'], 2) }}%</td>
                         </tr>
                         @endforeach
                         <tr class="bg-light fw-bold">
                             <td colspan="2">Total</td>
-                            <td>{{ number_format($totalSampahBiasa, 2) }}</td>
-                            <td>{{ number_format($totalSampahLB3, 2) }}</td>
-                            <td>{{ number_format($totalSampahAll, 2) }}</td>
                             <td>{{ number_format($totalTerkelola, 2) }}</td>
-                            <td>{{ number_format($persenTerkelolaTotal, 2) }}%</td>
-                            <td>{{ number_format($totalDiserahkanBiasa, 2) }}</td>
-                            <td>{{ number_format($totalDiserahkanLB3, 2) }}</td>
-                            <td>{{ number_format($persenDiserahkanTotal, 2) }}%</td>
+                            <td>{{ number_format($totalDiserahkanBiasa + $totalDiserahkanLB3, 2) }}</td>
+                            <td>{{ number_format($totalKeseluruhan, 2) }}</td>
+                            <td>{{ number_format($totalTerkelola, 2) }}</td>
+                            <td>{{ number_format($persenTerkelolaFromTotal, 2) }}%</td>
+                            <td>{{ number_format($totalDiserahkanBiasa + $totalDiserahkanLB3, 2) }}</td>
+                            <td>{{ number_format($persenDiserahkanFromTotal, 2) }}%</td>
                         </tr>
                     </tbody>
                 </table>

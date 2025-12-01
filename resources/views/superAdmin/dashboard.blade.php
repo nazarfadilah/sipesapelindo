@@ -3,50 +3,55 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="content-area filter-form">
-    <div class="row">
-        <div class="col-md-12">
+<div class="content-area-dashboard">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Dashboard Statistik</h4>
+        <div>
             <form id="filterForm" method="GET" action="{{ route('superadmin.dashboard') }}" class="d-flex align-items-center">
-                <div class="me-3">
-                    <label for="filter_type" class="me-2">Filter:</label>
-                    <select id="filter_type" name="filter_type" class="form-select form-select-sm" onchange="updateFilterOptions()">
-                        <option value="year" {{ request('filter_type') == 'year' ? 'selected' : '' }}>Tahun</option>
-                        <option value="month" {{ request('filter_type') == 'month' ? 'selected' : '' }}>Bulan</option>
-                        <option value="week" {{ request('filter_type') == 'week' ? 'selected' : '' }}>Minggu</option>
-                        <option value="day" {{ request('filter_type') == 'day' ? 'selected' : '' }}>Hari</option>
-                    </select>
-                </div>
+                <select name="data_type" class="form-select form-select-sm me-2" style="width: 150px;">
+                    <option value="both" {{ request('data_type', 'both') == 'both' ? 'selected' : '' }}>Semua</option>
+                    <option value="terkelola" {{ request('data_type') == 'terkelola' ? 'selected' : '' }}>Sampah Terkelola</option>
+                    <option value="diserahkan" {{ request('data_type') == 'diserahkan' ? 'selected' : '' }}>Sampah Diserahkan</option>
+                </select>
                 
-                <div id="yearFilter" class="me-3 {{ request('filter_type') != 'year' && request('filter_type') ? 'd-none' : '' }}">
-                    <label for="year" class="me-2">Tahun:</label>
-                    <select id="year" name="year" class="form-select form-select-sm">
+                <select id="filter_type" name="filter_type" class="form-select form-select-sm me-2" style="width: 120px;" onchange="updateFilterOptions()">
+                    <option value="year" {{ request('filter_type') == 'year' ? 'selected' : '' }}>Tahunan</option>
+                    <option value="month" {{ request('filter_type') == 'month' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="week" {{ request('filter_type') == 'week' ? 'selected' : '' }}>Mingguan</option>
+                    <option value="day" {{ request('filter_type') == 'day' ? 'selected' : '' }}>Harian</option>
+                </select>
+                    <option value="year" {{ request('filter_type') == 'year' ? 'selected' : '' }}>Tahunan</option>
+                    <option value="month" {{ request('filter_type') == 'month' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="week" {{ request('filter_type') == 'week' ? 'selected' : '' }}>Mingguan</option>
+                    <option value="day" {{ request('filter_type') == 'day' ? 'selected' : '' }}>Harian</option>
+                </select>
+                
+                <div id="yearFilter" class="{{ request('filter_type') != 'year' && request('filter_type') ? 'd-none' : '' }}">
+                    <select id="year" name="year" class="form-select form-select-sm me-2" style="width: 100px;">
                         @for ($y = date('Y'); $y >= 2023; $y--)
                             <option value="{{ $y }}" {{ request('year', date('Y')) == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
                     </select>
                 </div>
                 
-                <div id="monthFilter" class="me-3 {{ request('filter_type') != 'month' ? 'd-none' : '' }}">
-                    <label for="month" class="me-2">Bulan:</label>
-                    <select id="month" name="month" class="form-select form-select-sm">
+                <div id="monthFilter" class="{{ request('filter_type') != 'month' ? 'd-none' : '' }}">
+                    <select id="month" name="month" class="form-select form-select-sm me-2" style="width: 100px;">
                         @for ($m = 1; $m <= 12; $m++)
                             <option value="{{ $m }}" {{ request('month', date('m')) == $m ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
                         @endfor
                     </select>
                 </div>
                 
-                <div id="weekFilter" class="me-3 {{ request('filter_type') != 'week' ? 'd-none' : '' }}">
-                    <label for="week" class="me-2">Minggu:</label>
-                    <select id="week" name="week" class="form-select form-select-sm">
+                <div id="weekFilter" class="{{ request('filter_type') != 'week' ? 'd-none' : '' }}">
+                    <select id="week" name="week" class="form-select form-select-sm me-2" style="width: 100px;">
                         @for ($w = 1; $w <= 5; $w++)
                             <option value="{{ $w }}" {{ request('week', 1) == $w ? 'selected' : '' }}>Minggu {{ $w }}</option>
                         @endfor
                     </select>
                 </div>
                 
-                <div id="dayFilter" class="me-3 {{ request('filter_type') != 'day' ? 'd-none' : '' }}">
-                    <label for="day" class="me-2">Tanggal:</label>
-                    <input type="date" id="day" name="day" class="form-control form-control-sm" value="{{ request('day', date('Y-m-d')) }}">
+                <div id="dayFilter" class="{{ request('filter_type') != 'day' ? 'd-none' : '' }}">
+                    <input type="date" id="day" name="day" class="form-control form-control-sm me-2" style="width: 150px;" value="{{ request('day', date('Y-m-d')) }}">
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-sm">
@@ -55,9 +60,8 @@
             </form>
         </div>
     </div>
-</div>
 
-<div class="row">
+<div class="row mb-4">
     <div class="col-md-6">
         <div class="card bg-white text-dark p-3 shadow-sm">
             <h5 class="mb-3 text-dark">Distribusi Sampah Berdasarkan Jenis</h5>
@@ -87,7 +91,7 @@
     </div>
 </div>
 
-<div class="content-area">
+<div class="content-area-dashboard">
     @if(isset($startDate) && isset($endDate))
     <h4 class="mb-4">Rekap Neraca Pengelolaan Sampah ({{ $startDate->format('d M Y') }} - {{ $endDate->format('d M Y') }})</h4>
     @else
@@ -100,19 +104,18 @@
                 <tr>
                     <th rowspan="2">No</th>
                     <th rowspan="2">Sumber Sampah</th>
-                    <th colspan="2">Jumlah Timbulan Sampah (Per Bulan)</th>
-                    <th colspan="2">Jumlah Sampah Terkelola</th>
-                    <th rowspan="2">Presentase Sampah Terkelola (%)</th>
-                    <th colspan="2">Jumlah Sampah Limbah Diserahkan</th>
-                    <th rowspan="2">Presentase Sampah Limbah Diserahkan (%)</th>
+                    <th colspan="3">Jumlah Sampah</th>
+                    <th colspan="2">Pengelolaan Sampah (kg/bulan)</th>
+                    <th colspan="2">Jumlah Sampah Diserahkan (kg/bulan)</th>
                 </tr>
                 <tr>
-                    <th>Sampah (kg)</th>
-                    <th>LB3 (kg)</th>
-                    <th>Total Keseluruhan Sampah (kg)</th>
-                    <th>Keseluruhan (kg)</th>
-                    <th>Limbah (kg)</th>
-                    <th>Limbah (kg)</th>
+                    <th>Total Sampah Terkelola (kg/bulan)</th>
+                    <th>Total Sampah Diserahkan (kg/bulan)</th>
+                    <th>Total Keseluruhan (kg/bulan)</th>
+                    <th>Sampah Terkelola (kg/bulan)</th>
+                    <th>Persentase (%)</th>
+                    <th>Sampah Diserahkan (kg/bulan)</th>
+                    <th>Persentase (%)</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,26 +123,24 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $item['sumber'] }}</td>
-                    <td>{{ number_format($item['sampah_kg'], 2) }}</td>
-                    <td>{{ number_format($item['lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($item['total_kg'], 2) }}</td>
                     <td>{{ number_format($item['terkelola_kg'], 2) }}</td>
-                    <td>{{ number_format($item['persen_terkelola'], 2) }}%</td>
-                    <td>{{ number_format($item['diserahkan_kg'], 2) }}</td>
-                    <td>{{ number_format($item['diserahkan_lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($item['persen_diserahkan'], 2) }}%</td>
+                    <td>{{ number_format($item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['terkelola_kg'] + $item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['terkelola_kg'], 2) }}</td>
+                    <td>{{ number_format($item['persen_terkelola_from_total'], 2) }}%</td>
+                    <td>{{ number_format($item['diserahkan_kg'] + $item['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($item['persen_diserahkan_from_total'], 2) }}%</td>
                 </tr>
                 @endforeach
                 <tr>
                     <td colspan="2" class="text-center">Total</td>
-                    <td>{{ number_format($totals['sampah_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['total_kg'], 2) }}</td>
                     <td>{{ number_format($totals['terkelola_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['persen_terkelola'], 2) }}%</td>
-                    <td>{{ number_format($totals['diserahkan_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['diserahkan_lb3_kg'], 2) }}</td>
-                    <td>{{ number_format($totals['persen_diserahkan'], 2) }}%</td>
+                    <td>{{ number_format($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['total_keseluruhan'], 2) }}</td>
+                    <td>{{ number_format($totals['terkelola_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['persen_terkelola_from_total'], 2) }}%</td>
+                    <td>{{ number_format($totals['diserahkan_kg'] + $totals['diserahkan_lb3_kg'], 2) }}</td>
+                    <td>{{ number_format($totals['persen_diserahkan_from_total'], 2) }}%</td>
                 </tr>
             </tbody>
         </table>
@@ -149,6 +150,13 @@
 
 @push('scripts')
 <script>
+    // Data dari server
+    const jenisLabels = @json($jenisSampah->pluck('nama_jenis')->toArray());
+    const jenisTotalsData = @json($jenisTotals);
+    const jenisColorsData = @json($jenisColors);
+    const lokasiLabels = @json($lokasiAsals->pluck('nama_lokasi')->toArray());
+    const lokasiTotalsData = @json($lokasiTotals);
+    
     function updateFilterOptions() {
         const filterType = document.getElementById('filter_type').value;
         
@@ -176,10 +184,10 @@
     const pieChart = new Chart(pieCtx, {
         type: 'pie',
         data: {
-            labels: {!! json_encode($jenisSampah->pluck('nama_jenis')->toArray()) !!},
+            labels: jenisLabels,
             datasets: [{
-                data: {!! json_encode($jenisTotals) !!},
-                backgroundColor: {!! json_encode($jenisColors) !!},
+                data: jenisTotalsData,
+                backgroundColor: jenisColorsData,
                 borderWidth: 1
             }]
         },
@@ -199,10 +207,10 @@
     const barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
-            labels: {!! json_encode($lokasiAsals->pluck('nama_lokasi')->toArray()) !!},
+            labels: lokasiLabels,
             datasets: [{
                 label: 'Jumlah Sampah (kg)',
-                data: {!! json_encode($lokasiTotals) !!},
+                data: lokasiTotalsData,
                 backgroundColor: 'rgba(0, 191, 255, 0.7)',
                 borderColor: 'rgba(0, 191, 255, 1)',
                 borderWidth: 1

@@ -52,15 +52,29 @@ trait WithSweetAlert
         return $this->errorMessage('Validasi gagal:', $errors);
     }
 
-    // Specific CRUD messages
-    protected function createdSuccess($item = 'Data')
+    // Specific CRUD messages with redirect to route
+    protected function createdSuccess($item = 'Data', $route = null)
     {
-        return $this->successMessage("{$item} berhasil ditambahkan!");
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with('swal', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => "{$item} berhasil ditambahkan!",
+            'timer' => 3000,
+            'showConfirmButton' => false
+        ]);
     }
 
-    protected function updatedSuccess($item = 'Data')
+    protected function updatedSuccess($item = 'Data', $route = null)
     {
-        return $this->successMessage("{$item} berhasil diperbarui!");
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with('swal', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => "{$item} berhasil diperbarui!",
+            'timer' => 3000,
+            'showConfirmButton' => false
+        ]);
     }
 
     protected function deletedSuccess($item = 'Data')
@@ -72,40 +86,35 @@ trait WithSweetAlert
     {
         return $this->successMessage("{$item} berhasil diexport!");
     }
-}
 
-    // Specific CRUD messages
-    protected function createdSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil ditambahkan!");
-    }
-
-    protected function updatedSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil diperbarui!");
-    }
-
-    protected function deletedSuccess($item = 'Data')
-    {
-        return $this->successMessage("{$item} berhasil dihapus!");
-    }
-
-    protected function createdError($item = 'Data', $error = '')
+    protected function createdError($item = 'Data', $error = '', $route = null)
     {
         $message = "{$item} gagal ditambahkan!";
         if ($error) {
             $message .= " Error: {$error}";
         }
-        return $this->errorMessage($message);
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with('swal', [
+            'icon' => 'error',
+            'title' => 'Gagal!',
+            'text' => $message,
+            'showConfirmButton' => true
+        ])->withInput();
     }
 
-    protected function updatedError($item = 'Data', $error = '')
+    protected function updatedError($item = 'Data', $error = '', $route = null)
     {
         $message = "{$item} gagal diperbarui!";
         if ($error) {
             $message .= " Error: {$error}";
         }
-        return $this->errorMessage($message);
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with('swal', [
+            'icon' => 'error',
+            'title' => 'Gagal!',
+            'text' => $message,
+            'showConfirmButton' => true
+        ])->withInput();
     }
 
     protected function deletedError($item = 'Data', $error = '')

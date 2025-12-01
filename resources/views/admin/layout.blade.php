@@ -346,6 +346,56 @@
             left: 50%;
             transform: translateX(-50%);
         }
+
+        /* ===== RESPONSIVE MOBILE (HANYA AKTIF DI LAYAR KECIL) ===== */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 0.8rem 1rem !important;
+            }
+            .app-header .row {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            .app-header .col-6 {
+                width: 100%;
+                padding-left: 0.5rem !important;
+            }
+            .app-header h4 {
+                font-size: 16px !important;
+            }
+            .app-header small {
+                font-size: 11px !important;
+            }
+            .app-header img {
+                width: 55px !important;
+            }
+            .app-navbar {
+                padding: 0.5rem !important;
+            }
+            .app-navbar .d-flex {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.5rem !important;
+            }
+            .app-navbar .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.6rem 1rem !important;
+            }
+            .content-area {
+                padding: 1rem !important;
+            }
+            .table-responsive {
+                overflow-x: auto;
+            }
+            .data-table {
+                min-width: 800px;
+            }
+            .data-table th, .data-table td {
+                font-size: 12px;
+                padding: 0.5rem !important;
+            }
+        }
     </style>
 
     @stack('styles')
