@@ -38,10 +38,10 @@ class PetugasController extends Controller
 >>>>>>> 1f05cb852397f16d176ea7e6057455da1a78b7a4
             ->orderBy('tgl', 'desc')
             ->get();
-        
+
         return view('petugas.sampah_terkelola', compact('sampahTerkelolas'));
     }
-    
+
     /**
      * Menampilkan daftar sampah diserahkan
      *
@@ -56,10 +56,10 @@ class PetugasController extends Controller
 >>>>>>> 1f05cb852397f16d176ea7e6057455da1a78b7a4
             ->orderBy('tgl', 'desc')
             ->get();
-        
+
         return view('petugas.sampah_diserahkan', compact('sampahDiserahkans'));
     }
-    
+
     /**
      * Menampilkan form input sampah terkelola
      *
@@ -69,10 +69,10 @@ class PetugasController extends Controller
     {
         $lokasiAsals = LokasiAsal::all();
         $jenisAll = Jenis::all();
-        
+
         return view('petugas.input_sampah_terkelola', compact('lokasiAsals', 'jenisAll'));
     }
-    
+
     /**
      * Menyimpan data sampah terkelola baru
      *
@@ -89,7 +89,7 @@ class PetugasController extends Controller
             'tgl' => 'required|date',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        
+
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -97,12 +97,12 @@ class PetugasController extends Controller
             $file->move(storage_path('app/public/foto-sampah'), $filename);
             $validatedData['foto'] = 'foto-sampah/' . $filename;
         }
-        
+
         SampahTerkelola::create($validatedData);
-        
+
         return redirect()->route('petugas.sampah-terkelola')->with('success', 'Data sampah terkelola berhasil disimpan.');
     }
-    
+
     /**
      * Menampilkan form input sampah diserahkan
      *
@@ -113,10 +113,10 @@ class PetugasController extends Controller
         $lokasiAsals = LokasiAsal::all();
         $jenisAll = Jenis::all();
         $tujuanSampahs = TujuanSampah::all();
-        
+
         return view('petugas.input_sampah_diserahkan', compact('lokasiAsals', 'jenisAll', 'tujuanSampahs'));
     }
-    
+
     /**
      * Menyimpan data sampah diserahkan baru
      *
@@ -134,7 +134,7 @@ class PetugasController extends Controller
             'id_diserahkan' => 'required|exists:tujuan_sampahs,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        
+
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -142,9 +142,9 @@ class PetugasController extends Controller
             $file->move(storage_path('app/public/foto-sampah'), $filename);
             $validatedData['foto'] = 'foto-sampah/' . $filename;
         }
-        
+
         SampahDiserahkan::create($validatedData);
-        
+
         return redirect()->route('petugas.sampah-diserahkan')->with('success', 'Data sampah diserahkan berhasil disimpan.');
     }
 }

@@ -14,6 +14,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route untuk Viewer (Halaman Pembungkus)
+Route::get('/pedoman-aplikasi', function () {
+    return view('preview-pedoman');
+})->name('pedoman.preview');
+
+Route::get('/Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin', function () {
+
+    $path = public_path('assets/docs/Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf');
+
+    if (!file_exists($path)) {
+        abort(404, 'File pedoman tidak ditemukan.');
+    }
+
+    return response()->file($path, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf"',
+    ]);
+})->name('pedoman.stream');
+
 // Unauthorized route
 Route::get('/unauthorized', function () {
     return view('errors.unauthorized');
