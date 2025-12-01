@@ -22,7 +22,7 @@ Route::get('/', function () {
 });
 
 // Route untuk Viewer (Halaman Pembungkus)
-Route::get('/pedoman-aplikasi', function () {
+Route::get('/user-manual', function () {
     return view('preview-pedoman');
 })->name('pedoman.preview');
 
