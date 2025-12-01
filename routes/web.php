@@ -26,9 +26,9 @@ Route::get('/pedoman-aplikasi', function () {
     return view('preview-pedoman');
 })->name('pedoman.preview');
 
-Route::get('/Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin', function () {
+Route::get('/Buku Petunjuk Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin', function () {
 
-    $path = public_path('assets/docs/Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf');
+    $path = public_path('assets/docs/Buku Petunjuk Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf');
 
     if (!file_exists($path)) {
         abort(404, 'File pedoman tidak ditemukan.');
@@ -36,7 +36,7 @@ Route::get('/Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin', functio
 
     return response()->file($path, [
         'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="Pedoman Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf"',
+        'Content-Disposition' => 'inline; filename="Buku Petunjuk Penggunaan Aplikasi P-Waste Pelabuhan Banjarmasin.pdf"',
     ]);
 })->name('pedoman.stream');
 
@@ -65,49 +65,49 @@ Route::prefix('superadmin')->name('superadmin.')->middleware('superadmin')->grou
         Route::get('/jenis-sampah', [SuperAdminJenisController::class, 'index'])->name('jenis-sampah');
         Route::get('/tujuan-sampah', [SuperAdminTujuanSampahController::class, 'index'])->name('tujuan-sampah');
         Route::get('/dokumen', [SuperAdminDokumenController::class, 'index'])->name('dokumen');
-        
+
         // CRUD Dokumen
         Route::get('/dokumen/create', [SuperAdminDokumenController::class, 'create'])->name('dokumen.create');
         Route::post('/dokumen', [SuperAdminDokumenController::class, 'store'])->name('dokumen.store');
         Route::get('/dokumen/{id}/edit', [SuperAdminDokumenController::class, 'edit'])->name('dokumen.edit');
         Route::put('/dokumen/{id}', [SuperAdminDokumenController::class, 'update'])->name('dokumen.update');
         Route::delete('/dokumen/{id}', [SuperAdminDokumenController::class, 'destroy'])->name('dokumen.destroy');
-        
+
         // CRUD Lokasi Asal
         Route::get('/lokasi-asal/create', [SuperAdminLokasiAsalController::class, 'create'])->name('lokasi-asal.create');
         Route::post('/lokasi-asal', [SuperAdminLokasiAsalController::class, 'store'])->name('lokasi-asal.store');
         Route::get('/lokasi-asal/{id}/edit', [SuperAdminLokasiAsalController::class, 'edit'])->name('lokasi-asal.edit');
         Route::put('/lokasi-asal/{id}', [SuperAdminLokasiAsalController::class, 'update'])->name('lokasi-asal.update');
         Route::delete('/lokasi-asal/{id}', [SuperAdminLokasiAsalController::class, 'destroy'])->name('lokasi-asal.destroy');
-        
+
         // CRUD Jenis Sampah
         Route::get('/jenis/create', [SuperAdminJenisController::class, 'create'])->name('jenis.create');
         Route::post('/jenis', [SuperAdminJenisController::class, 'store'])->name('jenis.store');
         Route::get('/jenis/{id}/edit', [SuperAdminJenisController::class, 'edit'])->name('jenis.edit');
         Route::put('/jenis/{id}', [SuperAdminJenisController::class, 'update'])->name('jenis.update');
         Route::delete('/jenis/{id}', [SuperAdminJenisController::class, 'destroy'])->name('jenis.destroy');
-        
+
         // CRUD Tujuan Sampah
         Route::get('/tujuan/create', [SuperAdminTujuanSampahController::class, 'create'])->name('tujuan.create');
         Route::post('/tujuan', [SuperAdminTujuanSampahController::class, 'store'])->name('tujuan.store');
         Route::get('/tujuan/{id}/edit', [SuperAdminTujuanSampahController::class, 'edit'])->name('tujuan.edit');
         Route::put('/tujuan/{id}', [SuperAdminTujuanSampahController::class, 'update'])->name('tujuan.update');
         Route::delete('/tujuan/{id}', [SuperAdminTujuanSampahController::class, 'destroy'])->name('tujuan.destroy');
-        
+
         // CRUD Sampah Terkelola
         Route::get('/sampah-terkelola/create', [SuperAdminSampahTerkelolaController::class, 'create'])->name('sampah-terkelola.create');
         Route::post('/sampah-terkelola', [SuperAdminSampahTerkelolaController::class, 'store'])->name('sampah-terkelola.store');
         Route::get('/sampah-terkelola/{id}/edit', [SuperAdminSampahTerkelolaController::class, 'edit'])->name('sampah-terkelola.edit');
         Route::put('/sampah-terkelola/{id}', [SuperAdminSampahTerkelolaController::class, 'update'])->name('sampah-terkelola.update');
         Route::delete('/sampah-terkelola/{id}', [SuperAdminSampahTerkelolaController::class, 'destroy'])->name('sampah-terkelola.destroy');
-        
+
         // CRUD Sampah Diserahkan
         Route::get('/sampah-diserahkan/create', [SuperAdminSampahDiserahkanController::class, 'create'])->name('sampah-diserahkan.create');
         Route::post('/sampah-diserahkan', [SuperAdminSampahDiserahkanController::class, 'store'])->name('sampah-diserahkan.store');
         Route::get('/sampah-diserahkan/{id}/edit', [SuperAdminSampahDiserahkanController::class, 'edit'])->name('sampah-diserahkan.edit');
         Route::put('/sampah-diserahkan/{id}', [SuperAdminSampahDiserahkanController::class, 'update'])->name('sampah-diserahkan.update');
         Route::delete('/sampah-diserahkan/{id}', [SuperAdminSampahDiserahkanController::class, 'destroy'])->name('sampah-diserahkan.destroy');
-        
+
         // CRUD Users
         Route::get('/users/create', [SuperAdminUserController::class, 'create'])->name('users.create');
         Route::post('/users', [SuperAdminUserController::class, 'store'])->name('users.store');

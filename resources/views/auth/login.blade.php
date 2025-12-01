@@ -87,7 +87,7 @@
 
                         <div class="mb-3 text-center">
                             <a href="{{ route('pedoman.preview') }}" target="_blank" class="text-decoration-none text-primary" style="font-size: 0.9rem;">
-                                📖 Pedoman Penggunaan Aplikasi
+                                📖 Buku Petunjuk Penggunaan Aplikasi
                             </a>
                         </div>
 
